@@ -11,6 +11,9 @@ const wind = document.querySelector(".wind");
 const humidity = document.querySelector(".humidity");
 const city = document.querySelector(".city");
 const weatherError = document.querySelector(".weather-error");
+const quote = document.querySelector(".quote");
+const author = document.querySelector(".author");
+const changeQuote = document.querySelector(".change-quote");
 
 function getTimeOfDay() { 
   const date = new Date();
@@ -127,3 +130,15 @@ async function getWeather() {
 city.addEventListener("change", getWeather);
 document.addEventListener("DOMContentLoaded", getWeather);
 
+async function getQuotes() {
+  const quotes = "data.json";
+  const res = await fetch(quotes);
+  const data = await res.json();
+  const randomNum = Math.floor(Math.random() * (102 + 1));
+  console.log(data.quotes[randomNum]);
+  quote.textContent = data.quotes[randomNum].quote;
+  author.textContent = data.quotes[randomNum].author;
+}
+getQuotes();
+
+changeQuote.addEventListener("click", getQuotes);
