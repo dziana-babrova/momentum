@@ -4,7 +4,13 @@ const greeting = document.querySelector(".greeting");
 const userName = document.querySelector(".name");
 const slidePrev = document.querySelector(".slide-prev");
 const slideNext = document.querySelector(".slide-next");
-
+const weatherIcon = document.querySelector(".weather-icon");
+const temperature = document.querySelector(".temperature");
+const weatherDescription = document.querySelector(".weather-description");
+const wind = document.querySelector(".wind");
+const humidity = document.querySelector(".humidity");
+const city = document.querySelector(".city");
+const weatherError = document.querySelector(".weather-error");
 
 function getTimeOfDay() { 
   const date = new Date();
@@ -22,12 +28,15 @@ function getTimeOfDay() {
 
 function setLocalStorage() {
   localStorage.setItem("name", userName.value);
+  localStorage.setItem("city", city.value);
 }
 
 function getLocalStorage() {
   if (localStorage.getItem("name")) {
     userName.value = localStorage.getItem("name");
   }
+  city.value = localStorage.getItem("city") || "Minsk";
+  getWeather();
 }
 
 window.addEventListener("beforeunload", setLocalStorage);
@@ -90,3 +99,31 @@ function getSlidePrev() {
 
 slideNext.addEventListener("click", getSlideNext);
 slidePrev.addEventListener("click", getSlidePrev);
+
+async function getWeather() {
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&lang=en&appid=df22eb73d662962611e5beabc33f24b8&units=imperial`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    weatherIcon.className = "weather-icon owf";
+    weatherError.textContent = "";
+
+    weatherIcon.classList.add(`owf-${data.weather[0].id}`);
+    temperature.textContent = `${data.main.temp.toFixed(0)}°C`;
+    weatherDescription.textContent = data.weather[0].description;
+    wind.textContent = `Wind speed: ${Math.round(data.wind.speed / 3.6)} m/\s`;
+    humidity.textContent = `Humidity: ${data.main.humidity.toFixed(0)}%`;
+    console.log(data);
+  } catch {
+    weatherError.textContent = "Enter valid city"
+    weatherIcon.className = "weather-icon owf";
+    temperature.textContent = "";
+    wind.textContent = "";
+    humidity.textContent = "";
+    weatherDescription.textContent = "";
+  }
+}
+
+city.addEventListener("change", getWeather);
+document.addEventListener("DOMContentLoaded", getWeather);
+
