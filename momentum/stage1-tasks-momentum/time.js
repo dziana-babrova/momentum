@@ -1,3 +1,6 @@
+import playList from "./playList.js";
+console.log(playList);
+
 const time = document.querySelector(".time");
 const dateElement = document.querySelector(".date");
 const greeting = document.querySelector(".greeting");
@@ -14,8 +17,22 @@ const weatherError = document.querySelector(".weather-error");
 const quote = document.querySelector(".quote");
 const author = document.querySelector(".author");
 const changeQuote = document.querySelector(".change-quote");
+const play = document.querySelector(".play");
+const playPrevTrack = document.querySelector(".play-prev");
+const playNextTrack = document.querySelector(".play-next");
+const playListContainer = document.querySelector(".play-list");
 
-function getTimeOfDay() { 
+  playList.forEach((el) => {
+    const li = document.createElement("li");
+    playListContainer.append(li);
+    li.classList.add("play-item");
+    li.textContent = el.title;
+  });
+
+const playedItem = document.querySelectorAll(".play-item");
+console.log(playedItem);
+
+function getTimeOfDay() {
   const date = new Date();
   const hours = date.getHours();
   if (hours >= 0 && hours < 6) {
@@ -59,17 +76,14 @@ function showTime() {
 
   const timeOfDay = getTimeOfDay();
   greeting.textContent = `Good ${timeOfDay}, `;
-
 }
 showTime();
 
-
 function getRandomNum() {
-     return (Math.floor(Math.random() * (20 - 1 + 1)) + 1);
+  return Math.floor(Math.random() * (20 - 1 + 1)) + 1;
 }
-   
-let randomNum = getRandomNum();
 
+let randomNum = getRandomNum();
 
 function setBg() {
   const timeOfDay = getTimeOfDay();
@@ -77,20 +91,20 @@ function setBg() {
   img.src = `https://raw.githubusercontent.com/dziana-babrova/stage1-tasks/assets/images/${timeOfDay}/${randomNum
     .toString()
     .padStart(2, "0")}.jpg`;
-  img.onload = () => {      
+  img.onload = () => {
     document.body.style.backgroundImage = `url('${img.src}')`;
-  }; 
- }
+  };
+}
 
 setBg();
- 
+
 function getSlideNext() {
   randomNum++;
   if (randomNum > 20) {
-    randomNum = 1
+    randomNum = 1;
   }
   setBg();
-};
+}
 
 function getSlidePrev() {
   randomNum--;
@@ -118,7 +132,7 @@ async function getWeather() {
     humidity.textContent = `Humidity: ${data.main.humidity.toFixed(0)}%`;
     console.log(data);
   } catch {
-    weatherError.textContent = "Enter valid city"
+    weatherError.textContent = "Enter valid city";
     weatherIcon.className = "weather-icon owf";
     temperature.textContent = "";
     wind.textContent = "";
@@ -142,3 +156,56 @@ async function getQuotes() {
 getQuotes();
 
 changeQuote.addEventListener("click", getQuotes);
+
+const audio = new Audio();
+let isPlay = false;
+
+let playNum = 0;
+function playAudio() {
+  if (!isPlay) {
+    audio.src = playList[playNum].src;
+    audio.currentTime = 0;
+    audio.play();
+    isPlay = true;
+    play.classList.add("pause");
+    playedItem[playNum].classList.add("item-active");
+  } else {
+    audio.pause();
+    isPlay = false;
+    play.classList.remove("pause");
+  }
+  audio.addEventListener("ended", playNext);
+}
+
+function playNext() {
+  playNum++
+  if (playNum > playList.length - 1) {
+    playNum = 0
+  }
+  audio.src = playList[playNum].src;
+  audio.currentTime = 0;
+  audio.play();
+  playedItem.forEach((item) => item.classList.remove("item-active"));
+  playedItem[playNum].classList.add("item-active");
+  isPlay = true;
+  play.classList.add("pause");
+}
+
+function playPrev() {
+  playNum--;
+  if (playNum < 0) {
+    playNum = playList.length - 1;
+  }
+  audio.src = playList[playNum].src;
+  audio.currentTime = 0;
+  audio.play();
+  playedItem.forEach((item) => item.classList.remove("item-active"));
+  playedItem[playNum].classList.add("item-active");
+  isPlay = true;
+  play.classList.add("pause");
+}
+
+play.addEventListener("click", playAudio);
+playNextTrack.addEventListener("click", playNext);
+playPrevTrack.addEventListener("click", playPrev);
+

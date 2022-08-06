@@ -1,0 +1,20 @@
+{
+  "name": "dziana-babrova-jsfepreschool2022q2",
+  "version": "1.0.0",
+  "description": "Private repository for @dziana-babrova",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolling-scopes-school/dziana-babrova-JSFEPRESCHOOL2022Q2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rolling-scopes-school/dziana-babrova-JSFEPRESCHOOL2022Q2/issues"
+  },
+  "homepage": "https://github.com/rolling-scopes-school/dziana-babrova-JSFEPRESCHOOL2022Q2#readme",
+  "type": "module"
+}
