@@ -43,6 +43,14 @@ const localization = {
         en: "Wind Speed",
         ru: "Скорость ветра",
     },
+    imageSource: {
+        ru: "Источник\r\n изображений",
+        en: "Image\r\n source",
+    },
+    weatherError: {
+        en: "Enter valid city",
+        ru: "Ввведите другой город"
+    }
 };
 
 export default localization;

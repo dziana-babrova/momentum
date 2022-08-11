@@ -1,5 +1,5 @@
 import playList from "./playList.js";
-import localization from "./localization.js"
+import localization from "./localization.js";
 
 const time = document.querySelector(".time");
 const dateElement = document.querySelector(".date");
@@ -22,7 +22,6 @@ const playPrevTrack = document.querySelector(".play-prev");
 const playNextTrack = document.querySelector(".play-next");
 const playListContainer = document.querySelector(".play-list");
 const progressBar = document.querySelector("#seek");
-const player = document.querySelector(".player");
 const currentTrack = document.querySelector(".current-track");
 const TrackDuration = document.querySelector(".current-track-time");
 const currentPosition = document.querySelector(".current-position");
@@ -31,56 +30,8 @@ const volume = document.querySelector(".volume-slider");
 const settings = document.querySelector(".settings");
 const dropdown = document.querySelector(".dropdown-content");
 const settingsItems = document.querySelectorAll(".settings-item");
-const namePlaceholder = document.querySelector(".name");
 
-const languageDropdown = document.createElement("select");
-settingsItems[0].textContent = "Language";
-languageDropdown.name = "language";
-languageDropdown.classList.add("lang-dropdown");
-settingsItems[0].append(languageDropdown);
-const langEn = document.createElement("option");
-langEn.value = "en";
-languageDropdown.append(langEn);
-langEn.textContent = "En"
-const langBe = document.createElement("option");
-langBe.value = "ru";
-languageDropdown.append(langBe);
-langBe.textContent = "Ru";
-
-
-languageDropdown.value = localStorage.getItem("language") || "en";
-city.value = localStorage.getItem("city") || localization.cityPlaceholder[languageDropdown.value];
-
-
-languageDropdown.addEventListener("change", function showOption() {
-  setNamePlaceholder();  
-  setSettingsLabels();
-  getWeather();
-  getQuotes();
-  city.value = localization.cityPlaceholder[languageDropdown.value];
-});
-
-namePlaceholder.placeholder = localization.namePlaceholder[languageDropdown.value];
-
-function setNamePlaceholder() {
-  namePlaceholder.placeholder = localization.namePlaceholder[languageDropdown.value];
-}
-
-function setSettingsLabels() {
-  settingsItems[0].textContent = `${localization.langDropdown[languageDropdown.value]}`;
-  settingsItems[0].append(languageDropdown);
-languageDropdown.append(langEn);
-languageDropdown.append(langBe);
-
-
-}
-
-function showDrop() {
-  dropdown.classList.toggle("show");
-}
-
-settings.addEventListener("click", showDrop);
-
+/** Create playlist */
 playList.forEach((el) => {
   const li = document.createElement("li");
   playListContainer.append(li);
@@ -97,6 +48,70 @@ playList.forEach((el) => {
 const playedItem = document.querySelectorAll(".play-item");
 const playedIcons = document.querySelectorAll(".individual-play");
 
+/* Set and get local storage */
+function setLocalStorage() {
+  localStorage.setItem("name", userName.value);
+  localStorage.setItem("city", city.value);
+  localStorage.setItem("language", languageDropdown.value);
+  localStorage.setItem("Image source", imageSourceDropdown.value);
+}
+
+function getLocalStorage() {
+  languageDropdown.value = localStorage.getItem("language") || "En";
+  imageSourceDropdown.value = localStorage.getItem("Image source") || gitHubImages;
+
+  if (localStorage.getItem("name")) {
+    userName.value = localStorage.getItem("name");
+  } else {
+    userName.placeholder = localization.namePlaceholder[languageDropdown.value];
+  }
+
+  city.value = localStorage.getItem("city") || localization.cityPlaceholder[languageDropdown.value];
+  getWeather();
+  setSettingsLabels();
+  showTime();
+}
+
+window.addEventListener("beforeunload", setLocalStorage);
+window.addEventListener("load", getLocalStorage);
+
+/** Create settings items */
+const languageDropdown = document.createElement("select");
+const langEn = document.createElement("option");
+const langBe = document.createElement("option");
+languageDropdown.classList.add("lang-dropdown");
+languageDropdown.name = "language";
+langEn.value = "en";
+langBe.value = "ru";
+langEn.textContent = "En";
+langBe.textContent = "Ru";
+languageDropdown.append(langEn);
+languageDropdown.append(langBe);
+
+const imageSourceDropdown = document.createElement("select");
+const gitHubImages = document.createElement("option");
+const flickrImages = document.createElement("option");
+const unsplashImages = document.createElement("option");
+imageSourceDropdown.classList.add("image-dropdown");
+imageSourceDropdown.name = "Image source";
+gitHubImages.value = "GitHub";
+flickrImages.value = "Flickr";
+unsplashImages.value = "Unsplash";
+gitHubImages.textContent = "GitHub";
+flickrImages.textContent = "Flickr";
+unsplashImages.textContent = "Unsplash";
+imageSourceDropdown.append(gitHubImages);
+imageSourceDropdown.append(flickrImages);
+imageSourceDropdown.append(unsplashImages);
+
+function createSettingsElements() {
+  settingsItems[0].append(languageDropdown);
+  settingsItems[1].append(imageSourceDropdown);
+}
+
+createSettingsElements();
+
+/* Get time of the day*/
 function getTimeOfDay() {
   const date = new Date();
   const hours = date.getHours();
@@ -111,30 +126,7 @@ function getTimeOfDay() {
   }
 }
 
-function setLocalStorage() {
-  localStorage.setItem("name", userName.value);
-  localStorage.setItem("city", localization.cityPlaceholder[languageDropdown.value]);
-  localStorage.setItem("language", languageDropdown.value);
-}
-
-function getLocalStorage() {
-  if (localStorage.getItem("name")) {
-    userName.value = localStorage.getItem("name");
-  }
-  city.value = localStorage.getItem("city") || localization.cityPlaceholder[languageDropdown.value];
-  getWeather();
-  if (localStorage.getItem("language")) {
-    languageDropdown.value = localStorage.getItem("language")
-  }
-
-  else languageDropdown.value = "En";
-  setSettingsLabels();
-  showTime();
-}
-
-window.addEventListener("beforeunload", setLocalStorage);
-window.addEventListener("load", getLocalStorage);
-
+/* Show time, date and greeting */
 async function showTime() {
   const date = new Date();
   const currentTime = date.toLocaleTimeString("be-BY", { hour12: false });
@@ -170,11 +162,56 @@ async function showTime() {
 
 showTime();
 
-function getRandomNum() {
-  return Math.floor(Math.random() * (20 - 1 + 1)) + 1;
+/* Show weather */
+async function getWeather() {
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&lang=${languageDropdown.value}&appid=df22eb73d662962611e5beabc33f24b8&units=metric`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    weatherIcon.className = "weather-icon owf";
+    weatherError.textContent = "";
+
+    weatherIcon.classList.add(`owf-${data.weather[0].id}`);
+    temperature.textContent = `${data.main.temp.toFixed(0)}°C`;
+    weatherDescription.textContent = data.weather[0].description;
+    wind.textContent = `${localization.windSpeed[languageDropdown.value]}: ${Math.round(data.wind.speed / 3.6)} ${
+      localization.metersPerSec[languageDropdown.value]
+    }`;
+    humidity.textContent = `${localization.humidity[languageDropdown.value]}: ${data.main.humidity.toFixed(0)}%`;
+  } catch {
+    weatherError.textContent = localization.weatherError[languageDropdown.value];
+    weatherIcon.className = "weather-icon owf";
+    temperature.textContent = "";
+    wind.textContent = "";
+    humidity.textContent = "";
+    weatherDescription.textContent = "";
+  }
 }
 
-let randomNum = getRandomNum();
+city.addEventListener("change", getWeather);
+
+/* Show quote */
+async function getQuotes() {
+  const quotes = "data.json";
+  const res = await fetch(quotes);
+  const data = await res.json();
+  const randomNum = Math.floor(Math.random() * (102 + 1));
+  quote.textContent = data.quotes[randomNum].quote[languageDropdown.value];
+  author.textContent = data.quotes[randomNum].author[languageDropdown.value];
+}
+getQuotes();
+
+changeQuote.addEventListener("click", getQuotes);
+
+/* Show settings */
+function showDrop() {
+  dropdown.classList.toggle("show");
+}
+
+settings.addEventListener("click", showDrop);
+
+/* Set background image */
+let randomNum = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
 
 function setBg() {
   const timeOfDay = getTimeOfDay();
@@ -208,43 +245,22 @@ function getSlidePrev() {
 slideNext.addEventListener("click", getSlideNext);
 slidePrev.addEventListener("click", getSlidePrev);
 
-async function getWeather() {
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&lang=${languageDropdown.value}&appid=df22eb73d662962611e5beabc33f24b8&units=metric`;
-  try {
-    const res = await fetch(url);
-    const data = await res.json();
-    weatherIcon.className = "weather-icon owf";
-    weatherError.textContent = "";
+// languageDropdown.value = localStorage.getItem("language") || "en";
 
-    weatherIcon.classList.add(`owf-${data.weather[0].id}`);
-    temperature.textContent = `${data.main.temp.toFixed(0)}°C`;
-    weatherDescription.textContent = data.weather[0].description;
-    wind.textContent = `${localization.windSpeed[languageDropdown.value]}: ${Math.round(data.wind.speed / 3.6)} ${localization.metersPerSec[languageDropdown.value]}`;
-    humidity.textContent = `${localization.humidity[languageDropdown.value]}: ${data.main.humidity.toFixed(0)}%`;
-  } catch {
-    weatherError.textContent = "Enter valid city";
-    weatherIcon.className = "weather-icon owf";
-    temperature.textContent = "";
-    wind.textContent = "";
-    humidity.textContent = "";
-    weatherDescription.textContent = "";
-  }
+languageDropdown.addEventListener("change", function showOption() {
+  city.value = localization.cityPlaceholder[languageDropdown.value];
+  userName.placeholder = localization.namePlaceholder[languageDropdown.value];
+  setSettingsLabels();
+  getWeather();
+  getQuotes();
+});
+
+function setSettingsLabels() {
+  settingsItems[0].textContent = `${localization.langDropdown[languageDropdown.value]}`;
+  settingsItems[1].textContent = localization.imageSource[languageDropdown.value];
+  settingsItems[0].append(languageDropdown);
+  settingsItems[1].append(imageSourceDropdown);
 }
-
-city.addEventListener("change", getWeather);
-document.addEventListener("DOMContentLoaded", getWeather);
-
-async function getQuotes() {
-  const quotes = "data.json";
-  const res = await fetch(quotes);
-  const data = await res.json();
-  const randomNum = Math.floor(Math.random() * (102 + 1));
-  quote.textContent = data.quotes[randomNum].quote[languageDropdown.value];
-  author.textContent = data.quotes[randomNum].author[languageDropdown.value];
-}
-getQuotes();
-
-changeQuote.addEventListener("click", getQuotes);
 
 const audio = new Audio();
 let isPlay = false;
@@ -316,15 +332,14 @@ function playAudio() {
 
       progressBar.addEventListener("click", audioChangeTime);
     });
+  } else {
+    audio.pause();
+    isPlay = false;
+    play.classList.remove("pause");
+    playedIcons[playNum].classList.remove("individual-play-active");
   }
-  else {
-      audio.pause();
-      isPlay = false;
-      play.classList.remove("pause");
-      playedIcons[playNum].classList.remove("individual-play-active");
-    }
-    audio.addEventListener("ended", playNext);
-  }
+  audio.addEventListener("ended", playNext);
+}
 
 function playNext() {
   playNum++;
@@ -368,7 +383,7 @@ let currentTrackValue = 5;
 
 playedIcons.forEach((el, key) =>
   el.addEventListener("click", function someFunction() {
-    if ((currentTrackValue === key)) {
+    if (currentTrackValue === key) {
       playNum = key;
       audio.source = playList[key].src;
       playedItem.forEach((item) => item.classList.remove("item-active"));
