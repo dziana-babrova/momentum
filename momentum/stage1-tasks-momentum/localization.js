@@ -44,12 +44,16 @@ const localization = {
         ru: "Скорость ветра",
     },
     imageSource: {
-        ru: "Источник\r\n изображений",
-        en: "Image\r\n source",
+        ru: "Фон",
+        en: "Background",
     },
     weatherError: {
         en: "Enter valid city",
-        ru: "Ввведите другой город"
+        ru: "Ввведите другой город",
+    }, 
+    imageTags: {
+        en: "Tags",
+        ru: "Тэги",
     }
 };
 

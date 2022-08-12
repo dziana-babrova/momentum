@@ -48,33 +48,6 @@ playList.forEach((el) => {
 const playedItem = document.querySelectorAll(".play-item");
 const playedIcons = document.querySelectorAll(".individual-play");
 
-/* Set and get local storage */
-function setLocalStorage() {
-  localStorage.setItem("name", userName.value);
-  localStorage.setItem("city", city.value);
-  localStorage.setItem("language", languageDropdown.value);
-  localStorage.setItem("Image source", imageSourceDropdown.value);
-}
-
-function getLocalStorage() {
-  languageDropdown.value = localStorage.getItem("language") || "En";
-  imageSourceDropdown.value = localStorage.getItem("Image source") || gitHubImages;
-
-  if (localStorage.getItem("name")) {
-    userName.value = localStorage.getItem("name");
-  } else {
-    userName.placeholder = localization.namePlaceholder[languageDropdown.value];
-  }
-
-  city.value = localStorage.getItem("city") || localization.cityPlaceholder[languageDropdown.value];
-  getWeather();
-  setSettingsLabels();
-  showTime();
-}
-
-window.addEventListener("beforeunload", setLocalStorage);
-window.addEventListener("load", getLocalStorage);
-
 /** Create settings items */
 const languageDropdown = document.createElement("select");
 const langEn = document.createElement("option");
@@ -104,12 +77,93 @@ imageSourceDropdown.append(gitHubImages);
 imageSourceDropdown.append(flickrImages);
 imageSourceDropdown.append(unsplashImages);
 
+const tagsInput = document.createElement("div");
+tagsInput.classList.add("tags-input");
+const tagsInputField = document.createElement("input");
+tagsInputField.classList.add("tags-input-field");
+tagsInputField.type = "text";
+
 function createSettingsElements() {
   settingsItems[0].append(languageDropdown);
   settingsItems[1].append(imageSourceDropdown);
+  settingsItems[2].append(tagsInput);
+  settingsItems[2].appendChild(tagsInputField);
 }
 
 createSettingsElements();
+
+/* Set and get local storage */
+function setLocalStorage() {
+  localStorage.setItem("name", userName.value);
+  localStorage.setItem("city", city.value);
+  localStorage.setItem("language", languageDropdown.value);
+  localStorage.setItem("Image source", imageSourceDropdown.value);
+}
+
+function getLocalStorage() {
+  languageDropdown.value = localStorage.getItem("language") || langEn.value;
+
+  imageSourceDropdown.value = localStorage.getItem("Image source") || gitHubImages.value;
+  if (imageSourceDropdown.value === unsplashImages.value) {
+    setImageFromUnsplash();
+    slideNext.removeEventListener("click", getSlideNext);
+    slidePrev.removeEventListener("click", getSlidePrev);
+    slideNext.removeEventListener("click", setImageFromFlickr);
+    slidePrev.removeEventListener("click", setImageFromFlickr);
+    slideNext.addEventListener("click", setImageFromUnsplash);
+    slidePrev.addEventListener("click", setImageFromUnsplash);
+  } else if (imageSourceDropdown.value === flickrImages.value) {
+    setImageFromFlickr();
+    slideNext.removeEventListener("click", getSlideNext);
+    slidePrev.removeEventListener("click", getSlidePrev);
+    slideNext.removeEventListener("click", setImageFromUnsplash);
+    slidePrev.removeEventListener("click", setImageFromUnsplash);
+    slideNext.addEventListener("click", setImageFromFlickr);
+    slidePrev.addEventListener("click", setImageFromFlickr);
+  } else {
+    setBg();
+    slideNext.removeEventListener("click", setImageFromUnsplash);
+    slidePrev.removeEventListener("click", setImageFromUnsplash);
+    slideNext.removeEventListener("click", setImageFromFlickr);
+    slidePrev.removeEventListener("click", setImageFromFlickr);
+    slideNext.addEventListener("click", getSlideNext);
+    slidePrev.addEventListener("click", getSlidePrev);
+  } 
+    
+    if (localStorage.getItem("name")) {
+    userName.value = localStorage.getItem("name");
+  } else {
+    userName.placeholder = localization.namePlaceholder[languageDropdown.value];
+  }
+  changeInputSize();
+
+  city.value = localStorage.getItem("city") || localization.cityPlaceholder[languageDropdown.value];
+  getWeather();
+  setSettingsLabels();
+  showTime();
+  getQuotes();
+}
+
+window.addEventListener("beforeunload", setLocalStorage);
+window.addEventListener("load", getLocalStorage);
+
+/* Change Name Input Size */
+function changeInputSize() {
+  if (userName.value) {
+    let size = userName.value;
+    if (userName.value.length < 3) {
+      userName.size = 1;
+    } else {
+      userName.size = size.length - 3;
+    }
+  } else {
+    let size = userName.placeholder;
+    userName.size = size.length - 4;
+    console.log(userName.size);
+  }
+}
+
+  userName.addEventListener("input", changeInputSize)
 
 /* Get time of the day*/
 function getTimeOfDay() {
@@ -199,7 +253,6 @@ async function getQuotes() {
   quote.textContent = data.quotes[randomNum].quote[languageDropdown.value];
   author.textContent = data.quotes[randomNum].author[languageDropdown.value];
 }
-getQuotes();
 
 changeQuote.addEventListener("click", getQuotes);
 
@@ -210,7 +263,7 @@ function showDrop() {
 
 settings.addEventListener("click", showDrop);
 
-/* Set background image */
+/* Set background image from GitHub*/
 let randomNum = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
 
 function setBg() {
@@ -223,8 +276,6 @@ function setBg() {
     document.body.style.backgroundImage = `url('${img.src}')`;
   };
 }
-
-setBg();
 
 function getSlideNext() {
   randomNum++;
@@ -242,167 +293,243 @@ function getSlidePrev() {
   setBg();
 }
 
-slideNext.addEventListener("click", getSlideNext);
-slidePrev.addEventListener("click", getSlidePrev);
-
-// languageDropdown.value = localStorage.getItem("language") || "en";
-
-languageDropdown.addEventListener("change", function showOption() {
-  city.value = localization.cityPlaceholder[languageDropdown.value];
-  userName.placeholder = localization.namePlaceholder[languageDropdown.value];
-  setSettingsLabels();
-  getWeather();
-  getQuotes();
-});
-
-function setSettingsLabels() {
-  settingsItems[0].textContent = `${localization.langDropdown[languageDropdown.value]}`;
-  settingsItems[1].textContent = localization.imageSource[languageDropdown.value];
-  settingsItems[0].append(languageDropdown);
-  settingsItems[1].append(imageSourceDropdown);
-}
-
-const audio = new Audio();
-let isPlay = false;
-let playNum = 0;
-let curtime = 0;
-let source = "";
-
-function muteAudio() {
-  mute.classList.toggle("unmute");
-  if (audio.muted === false) {
-    audio.muted = true;
-  } else {
-    audio.muted = false;
+/* Set background image from Unsplash */
+async function setImageFromUnsplash() {
+  try {
+    const timeOfDay = getTimeOfDay();
+    const url = `https://api.unsplash.com/photos/random?query=${timeOfDay}-nature&client_id=CVFE2yn8y8lan7oI9_yMsGO3e4IQzQR0cV28F68IJOc&orientation=landscape`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const img = new Image();
+    img.src = data.urls.regular;
+    img.onload = () => {
+      document.body.style.backgroundImage = `url('${img.src}')`;
+      document.body.style.backgroundSize = "cover";
+    };
+  } catch {
+    imageSourceDropdown.value = gitHubImages.value;
+    setBg();
+    alert("You've exceeded the limit of images. The source of images was changed to GitHub");
   }
 }
 
-mute.addEventListener("click", muteAudio);
+/* Set background image from Flickr */
+async function setImageFromFlickr() {
+  try {
+    const timeOfDay = getTimeOfDay();
+    const url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=f0b17f0e527c2406c514c98a4392b1f7&tags=${timeOfDay},nature&extras=url_l&format=json&nojsoncallback=1&safe_search=1&per_page=200`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const photoArray = await data.photos.photo.filter((el) => el.url_l !== undefined).filter(el => el.width_l > el.height_l);
+    let random = Math.floor(Math.random() * (photoArray.length-1));
+    const img = new Image();
+    img.src = photoArray[random].url_l;
+    img.onload = () => {
+      document.body.style.backgroundImage = `url('${img.src}')`;
+      document.body.style.backgroundSize = "cover";
+    };
+  } catch {
+    setImageFromFlickr();
+  }
+}
 
-function playAudio() {
-  if (!isPlay) {
-    audio.src = playList[playNum].src;
-    audio.currentTime = curtime;
-    audio.preload = "auto";
-    audio.play();
-    audio.volume = volume.value / 100;
-    isPlay = true;
-    play.classList.add("pause");
-    let audioDuration;
-    playedItem[playNum].classList.add("item-active");
-    playedIcons[playNum].classList.add("individual-play-active");
-    currentTrack.textContent = playList[playNum].title;
-
-    volume.addEventListener("input", function (e) {
-      audio.volume = e.currentTarget.value / 100;
-      if (audio.volume === 0) {
-        mute.classList.add("unmute");
+  imageSourceDropdown.addEventListener("change", function changeBackground() {
+      if (imageSourceDropdown.value === unsplashImages.value) {
+        setImageFromUnsplash();
+        slideNext.removeEventListener("click", getSlideNext);
+        slidePrev.removeEventListener("click", getSlidePrev);
+        slideNext.removeEventListener("click", setImageFromFlickr);
+        slidePrev.removeEventListener("click", setImageFromFlickr);
+        slideNext.addEventListener("click", setImageFromUnsplash);
+        slidePrev.addEventListener("click", setImageFromUnsplash);
+      } else if (imageSourceDropdown.value === flickrImages.value) {
+        setImageFromFlickr();
+        slideNext.removeEventListener("click", getSlideNext);
+        slidePrev.removeEventListener("click", getSlidePrev);
+        slideNext.removeEventListener("click", setImageFromUnsplash);
+        slidePrev.removeEventListener("click", setImageFromUnsplash);
+        slideNext.addEventListener("click", setImageFromFlickr);
+        slidePrev.addEventListener("click", setImageFromFlickr);
       } else {
-        mute.classList.remove("unmute");
-      }
-    });
+        setBg();
+        slideNext.removeEventListener("click", setImageFromUnsplash);
+        slidePrev.removeEventListener("click", setImageFromUnsplash);
+        slideNext.removeEventListener("click", setImageFromFlickr);
+        slidePrev.removeEventListener("click", setImageFromFlickr);
+        slideNext.addEventListener("click", getSlideNext);
+        slidePrev.addEventListener("click", getSlidePrev);
+      } 
 
-    audio.addEventListener("loadedmetadata", function () {
-      audioDuration = audio.duration;
-      TrackDuration.textContent = parseTime(audio.duration);
-      progressBar.max = audioDuration;
+  });
 
-      function parseTime(duration) {
-        let minutes, seconds;
-        minutes = Math.floor(duration / 60)
-          .toString()
-          .padStart(2, "0");
-        seconds = Math.floor(duration % 60)
-          .toString()
-          .padStart(2, "0");
-        return `${minutes}:${seconds}`;
-      }
 
-      audio.addEventListener("timeupdate", function () {
-        curtime = parseInt(audio.currentTime, 10);
-        progressBar.value = curtime;
-        currentPosition.textContent = `${parseTime(curtime)}/`;
+  /* Set settings elements*/
+  function setSettingsLabels() {
+    settingsItems[0].textContent = `${localization.langDropdown[languageDropdown.value]}`;
+    settingsItems[1].textContent = localization.imageSource[languageDropdown.value];
+    settingsItems[2].textContent = localization.imageTags[languageDropdown.value];
+
+    settingsItems[0].append(languageDropdown);
+    settingsItems[1].append(imageSourceDropdown);
+    settingsItems[2].append(tagsInput);
+    settingsItems[2].appendChild(tagsInputField);
+
+  }
+
+  /* Change language */
+  languageDropdown.addEventListener("change", function showOption() {
+    city.value = localization.cityPlaceholder[languageDropdown.value];
+    userName.placeholder = localization.namePlaceholder[languageDropdown.value];
+    changeInputSize();
+    setSettingsLabels();
+    getWeather();
+    getQuotes();
+    showTime();
+  });
+
+  /* Audio Player */
+  const audio = new Audio();
+  let isPlay = false;
+  let playNum = 0;
+  let curtime = 0;
+
+  function playAudio() {
+    if (!isPlay) {
+      audio.src = playList[playNum].src;
+      audio.currentTime = curtime;
+      audio.preload = "auto";
+      audio.volume = volume.value / 100;
+      audio.play();
+      isPlay = true;
+      play.classList.add("pause");
+      let audioDuration;
+      playedItem[playNum].classList.add("item-active");
+      playedIcons[playNum].classList.add("individual-play-active");
+      currentTrack.textContent = playList[playNum].title;
+
+      volume.addEventListener("input", function (e) {
+        audio.volume = e.currentTarget.value / 100;
+        if (audio.volume === 0) {
+          mute.classList.add("unmute");
+        } else {
+          mute.classList.remove("unmute");
+        }
       });
 
-      function audioChangeTime(e) {
-        let currentPositionOnBar = e.clientX - progressBar.offsetLeft;
-        let currentPositionOnBarInPercent = (currentPositionOnBar * 100) / progressBar.offsetWidth;
-        audio.currentTime = (currentPositionOnBarInPercent * audio.duration) / 100;
-      }
+      audio.addEventListener("loadedmetadata", function () {
+        audioDuration = audio.duration;
+        TrackDuration.textContent = parseTime(audio.duration);
+        progressBar.max = audioDuration;
 
-      progressBar.addEventListener("click", audioChangeTime);
-    });
-  } else {
-    audio.pause();
-    isPlay = false;
-    play.classList.remove("pause");
-    playedIcons[playNum].classList.remove("individual-play-active");
-  }
-  audio.addEventListener("ended", playNext);
-}
+        function parseTime(duration) {
+          let minutes, seconds;
+          minutes = Math.floor(duration / 60)
+            .toString()
+            .padStart(2, "0");
+          seconds = Math.floor(duration % 60)
+            .toString()
+            .padStart(2, "0");
+          return `${minutes}:${seconds}`;
+        }
 
-function playNext() {
-  playNum++;
-  if (playNum > playList.length - 1) {
-    playNum = 0;
-  }
-  audio.src = playList[playNum].src;
-  audio.currentTime = 0;
-  audio.play();
-  playedItem.forEach((item) => item.classList.remove("item-active"));
-  playedItem[playNum].classList.add("item-active");
-  playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
-  playedIcons[playNum].classList.add("individual-play-active");
-  isPlay = true;
-  play.classList.add("pause");
-  currentTrack.textContent = playList[playNum].title;
-}
+        audio.addEventListener("timeupdate", function () {
+          curtime = parseInt(audio.currentTime, 10);
+          progressBar.value = curtime;
+          currentPosition.textContent = `${parseTime(curtime)}/`;
+        });
 
-function playPrev() {
-  playNum--;
-  if (playNum < 0) {
-    playNum = playList.length - 1;
-  }
-  audio.src = playList[playNum].src;
-  audio.currentTime = 0;
-  audio.play();
-  playedItem.forEach((item) => item.classList.remove("item-active"));
-  playedItem[playNum].classList.add("item-active");
-  playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
-  playedIcons[playNum].classList.add("individual-play-active");
-  isPlay = true;
-  play.classList.add("pause");
-  currentTrack.textContent = playList[playNum].title;
-}
+        function audioChangeTime(e) {
+          let currentPositionOnBar = e.clientX - progressBar.offsetLeft;
+          let currentPositionOnBarInPercent = (currentPositionOnBar * 100) / progressBar.offsetWidth;
+          audio.currentTime = (currentPositionOnBarInPercent * audio.duration) / 100;
+        }
 
-play.addEventListener("click", playAudio);
-playNextTrack.addEventListener("click", playNext);
-playPrevTrack.addEventListener("click", playPrev);
-
-let currentTrackValue = 5;
-
-playedIcons.forEach((el, key) =>
-  el.addEventListener("click", function someFunction() {
-    if (currentTrackValue === key) {
-      playNum = key;
-      audio.source = playList[key].src;
-      playedItem.forEach((item) => item.classList.remove("item-active"));
-      playedItem[playNum].classList.add("item-active");
-      playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
-      playedIcons[playNum].classList.add("individual-play-active");
-      playAudio();
-      currentTrackValue = key;
+        progressBar.addEventListener("click", audioChangeTime);
+      });
     } else {
+      audio.pause();
       isPlay = false;
-      curtime = 0;
-      playNum = key;
-      audio.source = playList[key].src;
-      playedItem.forEach((item) => item.classList.remove("item-active"));
-      playedItem[playNum].classList.add("item-active");
-      playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
-      playedIcons[playNum].classList.add("individual-play-active");
-      playAudio();
-      currentTrackValue = key;
+      play.classList.remove("pause");
+      playedIcons[playNum].classList.remove("individual-play-active");
     }
-  })
-);
+    audio.addEventListener("ended", playNext);
+  }
+
+
+  function muteAudio() {
+    mute.classList.toggle("unmute");
+    if (audio.muted === false) {
+      audio.muted = true;
+    } else {
+      audio.muted = false;
+    }
+  }
+
+  mute.addEventListener("click", muteAudio);
+
+
+  function playNext() {
+    playNum++;
+    if (playNum > playList.length - 1) {
+      playNum = 0;
+    }
+    audio.src = playList[playNum].src;
+    audio.currentTime = 0;
+    audio.play();
+    playedItem.forEach((item) => item.classList.remove("item-active"));
+    playedItem[playNum].classList.add("item-active");
+    playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
+    playedIcons[playNum].classList.add("individual-play-active");
+    isPlay = true;
+    play.classList.add("pause");
+    currentTrack.textContent = playList[playNum].title;
+  }
+
+  function playPrev() {
+    playNum--;
+    if (playNum < 0) {
+      playNum = playList.length - 1;
+    }
+    audio.src = playList[playNum].src;
+    audio.currentTime = 0;
+    audio.play();
+    playedItem.forEach((item) => item.classList.remove("item-active"));
+    playedItem[playNum].classList.add("item-active");
+    playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
+    playedIcons[playNum].classList.add("individual-play-active");
+    isPlay = true;
+    play.classList.add("pause");
+    currentTrack.textContent = playList[playNum].title;
+  }
+
+  play.addEventListener("click", playAudio);
+  playNextTrack.addEventListener("click", playNext);
+  playPrevTrack.addEventListener("click", playPrev);
+
+  let currentTrackValue = 5;
+
+  playedIcons.forEach((el, key) =>
+    el.addEventListener("click", function someFunction() {
+      if (currentTrackValue === key) {
+        playNum = key;
+        audio.source = playList[key].src;
+        playedItem.forEach((item) => item.classList.remove("item-active"));
+        playedItem[playNum].classList.add("item-active");
+        playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
+        playedIcons[playNum].classList.add("individual-play-active");
+        playAudio();
+        currentTrackValue = key;
+      } else {
+        isPlay = false;
+        curtime = 0;
+        playNum = key;
+        audio.source = playList[key].src;
+        playedItem.forEach((item) => item.classList.remove("item-active"));
+        playedItem[playNum].classList.add("item-active");
+        playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
+        playedIcons[playNum].classList.add("individual-play-active");
+        playAudio();
+        currentTrackValue = key;
+      }
+    })
+  )
