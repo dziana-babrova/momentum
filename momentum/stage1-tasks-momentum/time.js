@@ -30,6 +30,10 @@ const volume = document.querySelector(".volume-slider");
 const settings = document.querySelector(".settings");
 const dropdown = document.querySelector(".dropdown-content");
 const settingsItems = document.querySelectorAll(".settings-item");
+const player = document.querySelector(".player");
+const weather = document.querySelector(".weather");
+const greetingContainer = document.querySelector(".greeting-container");
+const quotesContainer = document.querySelector(".quotes-container");
 
 /** Create playlist */
 playList.forEach((el) => {
@@ -83,14 +87,93 @@ const tagsInputField = document.createElement("input");
 tagsInputField.classList.add("tags-input-field");
 tagsInputField.type = "text";
 
+tagsInputField.addEventListener("change", changeBackground);
+
+const playerCheckbox = document.createElement("input");
+playerCheckbox.classList.add("checkbox");
+playerCheckbox.type = "checkbox";
+const weatherCheckbox = document.createElement("input");
+weatherCheckbox.classList.add("checkbox");
+weatherCheckbox.type = "checkbox";
+const timeCheckbox = document.createElement("input");
+timeCheckbox.classList.add("checkbox");
+timeCheckbox.type = "checkbox";
+const DateCheckbox = document.createElement("input");
+DateCheckbox.classList.add("checkbox");
+DateCheckbox.type = "checkbox";
+const greetingCheckbox = document.createElement("input");
+greetingCheckbox.classList.add("checkbox");
+greetingCheckbox.type = "checkbox";
+const quotesCheckbox = document.createElement("input");
+quotesCheckbox.classList.add("checkbox");
+quotesCheckbox.type = "checkbox";
+const todoCheckbox = document.createElement("input");
+todoCheckbox.classList.add("checkbox");
+todoCheckbox.type = "checkbox";
+
+
 function createSettingsElements() {
   settingsItems[0].append(languageDropdown);
   settingsItems[1].append(imageSourceDropdown);
   settingsItems[2].append(tagsInput);
   settingsItems[2].appendChild(tagsInputField);
+  settingsItems[3].append(playerCheckbox);
+  settingsItems[4].append(weatherCheckbox);
+  settingsItems[5].append(timeCheckbox);
+  settingsItems[6].append(DateCheckbox);
+  settingsItems[7].append(greetingCheckbox);
+  settingsItems[8].append(quotesCheckbox);
+  settingsItems[9].append(todoCheckbox);
 }
 
 createSettingsElements();
+
+/* Hide/display elements */
+function hidePlayer() {
+  if (playerCheckbox.checked === false) player.classList.add("hide");
+  else player.classList.remove("hide");
+}
+
+function hideWeather() {
+  if (weatherCheckbox.checked === false) weather.classList.add("hide");
+  else weather.classList.remove("hide");
+}
+
+function hideTime() {
+    if (timeCheckbox.checked === false) time.classList.add("hide");
+    else time.classList.remove("hide");
+}
+
+function hideDate() {
+    if (DateCheckbox.checked === false) dateElement.classList.add("hide");
+    else dateElement.classList.remove("hide");
+}
+
+function hideGreeting() {
+    if (greetingCheckbox.checked === false) greetingContainer.classList.add("hide");
+    else greetingContainer.classList.remove("hide");
+}
+
+function hideQuotes() {
+    if (quotesCheckbox.checked === false) quotesContainer.classList.add("hide");
+    else quotesContainer.classList.remove("hide");
+}
+
+function hideAllElements() {
+  hidePlayer();
+  hideWeather();
+  hideTime();
+  hideDate();
+  hideGreeting();
+  hideQuotes();
+}
+
+playerCheckbox.addEventListener("change", hidePlayer);
+weatherCheckbox.addEventListener("change", hideWeather);
+timeCheckbox.addEventListener("change", hideTime);
+DateCheckbox.addEventListener("change", hideDate);
+greetingCheckbox.addEventListener("change", hideGreeting);
+quotesCheckbox.addEventListener("change", hideQuotes);
 
 /* Set and get local storage */
 function setLocalStorage() {
@@ -98,37 +181,60 @@ function setLocalStorage() {
   localStorage.setItem("city", city.value);
   localStorage.setItem("language", languageDropdown.value);
   localStorage.setItem("Image source", imageSourceDropdown.value);
+  localStorage.setItem("tags", tagsInputField.value);
+  if (!playerCheckbox.checked) {
+    localStorage.setItem("hide Player", playerCheckbox.checked);
+  } else {
+    localStorage.removeItem("hide Player");
+  }
+  if (!weatherCheckbox.checked) {
+    localStorage.setItem("hide Weather", weatherCheckbox.checked);
+  } else {
+    localStorage.removeItem("hide Weather");
+  }
+  if (!timeCheckbox.checked) {
+    localStorage.setItem("hide Time", timeCheckbox.checked);
+  } else {
+    localStorage.removeItem("hide Time");
+  }
+  if (!DateCheckbox.checked) {
+    localStorage.setItem("hide Date", DateCheckbox.checked);
+  } else {
+    localStorage.removeItem("hide Date");
+  }
+    if (!greetingCheckbox.checked) {
+      localStorage.setItem("hide Greeting", greetingCheckbox.checked);
+    } else {
+      localStorage.removeItem("hide Greeting");
+    }
+        if (!quotesCheckbox.checked) {
+          localStorage.setItem("hide Quotes", quotesCheckbox.checked);
+        } else {
+          localStorage.removeItem("hide Quotes");
+  }
+          if (!quotesCheckbox.checked) {
+            localStorage.setItem("hide Quotes", quotesCheckbox.checked);
+          } else {
+            localStorage.removeItem("hide Quotes");
+          }
+          if (!todoCheckbox.checked) {
+            localStorage.setItem("hide todo", todoCheckbox.checked);
+          } else {
+            localStorage.removeItem("hide todo");
+          }
 }
 
 function getLocalStorage() {
   languageDropdown.value = localStorage.getItem("language") || langEn.value;
 
+   if (localStorage.getItem("tags")) {
+     tagsInputField.value = localStorage.getItem("tags");
+   } else {
+     tagsInputField.value = `${getTimeOfDay()}, nature`;
+   }
+
   imageSourceDropdown.value = localStorage.getItem("Image source") || gitHubImages.value;
-  if (imageSourceDropdown.value === unsplashImages.value) {
-    setImageFromUnsplash();
-    slideNext.removeEventListener("click", getSlideNext);
-    slidePrev.removeEventListener("click", getSlidePrev);
-    slideNext.removeEventListener("click", setImageFromFlickr);
-    slidePrev.removeEventListener("click", setImageFromFlickr);
-    slideNext.addEventListener("click", setImageFromUnsplash);
-    slidePrev.addEventListener("click", setImageFromUnsplash);
-  } else if (imageSourceDropdown.value === flickrImages.value) {
-    setImageFromFlickr();
-    slideNext.removeEventListener("click", getSlideNext);
-    slidePrev.removeEventListener("click", getSlidePrev);
-    slideNext.removeEventListener("click", setImageFromUnsplash);
-    slidePrev.removeEventListener("click", setImageFromUnsplash);
-    slideNext.addEventListener("click", setImageFromFlickr);
-    slidePrev.addEventListener("click", setImageFromFlickr);
-  } else {
-    setBg();
-    slideNext.removeEventListener("click", setImageFromUnsplash);
-    slidePrev.removeEventListener("click", setImageFromUnsplash);
-    slideNext.removeEventListener("click", setImageFromFlickr);
-    slidePrev.removeEventListener("click", setImageFromFlickr);
-    slideNext.addEventListener("click", getSlideNext);
-    slidePrev.addEventListener("click", getSlidePrev);
-  } 
+  changeBackground();
     
     if (localStorage.getItem("name")) {
     userName.value = localStorage.getItem("name");
@@ -142,6 +248,50 @@ function getLocalStorage() {
   setSettingsLabels();
   showTime();
   getQuotes();
+
+  if (localStorage.getItem("hide Player")) {
+    playerCheckbox.checked = false;
+  } else {
+    playerCheckbox.checked = true;
+    console.log(playerCheckbox.checked);
+  }
+
+  if (localStorage.getItem("hide Weather")) {
+    weatherCheckbox.checked = false;
+  } else {
+    weatherCheckbox.checked = true;
+  }
+
+    if (localStorage.getItem("hide Time")) {
+      timeCheckbox.checked = false;
+    } else {
+      timeCheckbox.checked = true;
+    }
+
+      if (localStorage.getItem("hide Date")) {
+        DateCheckbox.checked = false;
+      } else {
+        DateCheckbox.checked = true;
+      }
+
+        if (localStorage.getItem("hide Greeting")) {
+          greetingCheckbox.checked = false;
+        } else {
+          greetingCheckbox.checked = true;
+        }
+
+                if (localStorage.getItem("hide Quotes")) {
+                  quotesCheckbox.checked = false;
+                } else {
+                  quotesCheckbox.checked = true;
+                }
+
+          if (localStorage.getItem("hide todo")) {
+            todoCheckbox.checked = false;
+          } else {
+            todoCheckbox.checked = true;
+          }
+hideAllElements();
 }
 
 window.addEventListener("beforeunload", setLocalStorage);
@@ -296,8 +446,8 @@ function getSlidePrev() {
 /* Set background image from Unsplash */
 async function setImageFromUnsplash() {
   try {
-    const timeOfDay = getTimeOfDay();
-    const url = `https://api.unsplash.com/photos/random?query=${timeOfDay}-nature&client_id=CVFE2yn8y8lan7oI9_yMsGO3e4IQzQR0cV28F68IJOc&orientation=landscape`;
+    const url = `https://api.unsplash.com/photos/random?query=${tagsInputField.value}&client_id=CVFE2yn8y8lan7oI9_yMsGO3e4IQzQR0cV28F68IJOc&orientation=landscape`;
+    console.log(url);
     const res = await fetch(url);
     const data = await res.json();
     const img = new Image();
@@ -316,8 +466,8 @@ async function setImageFromUnsplash() {
 /* Set background image from Flickr */
 async function setImageFromFlickr() {
   try {
-    const timeOfDay = getTimeOfDay();
-    const url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=f0b17f0e527c2406c514c98a4392b1f7&tags=${timeOfDay},nature&extras=url_l&format=json&nojsoncallback=1&safe_search=1&per_page=200`;
+    const url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=f0b17f0e527c2406c514c98a4392b1f7&tags=${tagsInputField.value}&extras=url_l&format=json&nojsoncallback=1&safe_search=1&per_page=200`;
+    console.log(url);
     const res = await fetch(url);
     const data = await res.json();
     const photoArray = await data.photos.photo.filter((el) => el.url_l !== undefined).filter(el => el.width_l > el.height_l);
@@ -333,47 +483,62 @@ async function setImageFromFlickr() {
   }
 }
 
-  imageSourceDropdown.addEventListener("change", function changeBackground() {
-      if (imageSourceDropdown.value === unsplashImages.value) {
-        setImageFromUnsplash();
-        slideNext.removeEventListener("click", getSlideNext);
-        slidePrev.removeEventListener("click", getSlidePrev);
-        slideNext.removeEventListener("click", setImageFromFlickr);
-        slidePrev.removeEventListener("click", setImageFromFlickr);
-        slideNext.addEventListener("click", setImageFromUnsplash);
-        slidePrev.addEventListener("click", setImageFromUnsplash);
-      } else if (imageSourceDropdown.value === flickrImages.value) {
-        setImageFromFlickr();
-        slideNext.removeEventListener("click", getSlideNext);
-        slidePrev.removeEventListener("click", getSlidePrev);
-        slideNext.removeEventListener("click", setImageFromUnsplash);
-        slidePrev.removeEventListener("click", setImageFromUnsplash);
-        slideNext.addEventListener("click", setImageFromFlickr);
-        slidePrev.addEventListener("click", setImageFromFlickr);
-      } else {
-        setBg();
-        slideNext.removeEventListener("click", setImageFromUnsplash);
-        slidePrev.removeEventListener("click", setImageFromUnsplash);
-        slideNext.removeEventListener("click", setImageFromFlickr);
-        slidePrev.removeEventListener("click", setImageFromFlickr);
-        slideNext.addEventListener("click", getSlideNext);
-        slidePrev.addEventListener("click", getSlidePrev);
-      } 
+  /* Change Background */
+function changeBackground() {
+  if (imageSourceDropdown.value === unsplashImages.value) {
+    setImageFromUnsplash();
+    slideNext.removeEventListener("click", getSlideNext);
+    slidePrev.removeEventListener("click", getSlidePrev);
+    slideNext.removeEventListener("click", setImageFromFlickr);
+    slidePrev.removeEventListener("click", setImageFromFlickr);
+    slideNext.addEventListener("click", setImageFromUnsplash);
+    slidePrev.addEventListener("click", setImageFromUnsplash);
+  } else if (imageSourceDropdown.value === flickrImages.value) {
+    setImageFromFlickr();
+    slideNext.removeEventListener("click", getSlideNext);
+    slidePrev.removeEventListener("click", getSlidePrev);
+    slideNext.removeEventListener("click", setImageFromUnsplash);
+    slidePrev.removeEventListener("click", setImageFromUnsplash);
+    slideNext.addEventListener("click", setImageFromFlickr);
+    slidePrev.addEventListener("click", setImageFromFlickr);
+  } else {
+    setBg();
+    slideNext.removeEventListener("click", setImageFromUnsplash);
+    slidePrev.removeEventListener("click", setImageFromUnsplash);
+    slideNext.removeEventListener("click", setImageFromFlickr);
+    slidePrev.removeEventListener("click", setImageFromFlickr);
+    slideNext.addEventListener("click", getSlideNext);
+    slidePrev.addEventListener("click", getSlidePrev);
+  }
+}
 
-  });
-
+  imageSourceDropdown.addEventListener("change", changeBackground);
 
   /* Set settings elements*/
   function setSettingsLabels() {
     settingsItems[0].textContent = `${localization.langDropdown[languageDropdown.value]}`;
     settingsItems[1].textContent = localization.imageSource[languageDropdown.value];
     settingsItems[2].textContent = localization.imageTags[languageDropdown.value];
+    settingsItems[3].textContent = localization.player[languageDropdown.value];
+    settingsItems[4].textContent = localization.weather[languageDropdown.value];
+    settingsItems[5].textContent = localization.time[languageDropdown.value];
+    settingsItems[6].textContent = localization.date[languageDropdown.value];
+    settingsItems[7].textContent = localization.greeting[languageDropdown.value];
+    settingsItems[8].textContent = localization.quotes[languageDropdown.value];
+    settingsItems[9].textContent = localization.todo[languageDropdown.value];
 
+    
     settingsItems[0].append(languageDropdown);
     settingsItems[1].append(imageSourceDropdown);
     settingsItems[2].append(tagsInput);
     settingsItems[2].appendChild(tagsInputField);
-
+    settingsItems[3].append(playerCheckbox);
+      settingsItems[4].append(weatherCheckbox);
+      settingsItems[5].append(timeCheckbox);
+      settingsItems[6].append(DateCheckbox);
+      settingsItems[7].append(greetingCheckbox);
+      settingsItems[8].append(quotesCheckbox);
+      settingsItems[9].append(todoCheckbox);
   }
 
   /* Change language */

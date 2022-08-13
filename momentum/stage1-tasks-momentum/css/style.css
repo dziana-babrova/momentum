@@ -32,6 +32,9 @@ body {
 }
 
 .player {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 400ms;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -239,6 +242,9 @@ input[type=range].styled-slider::-webkit-slider-thumb {
 }
 
 .weather {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 400ms;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -317,6 +323,9 @@ input[type=range].styled-slider::-webkit-slider-thumb {
 }
 
 .time {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 400ms;
   min-height: 124px;
   margin-bottom: 10px;
   font-family: 'Arial-MT';
@@ -325,6 +334,9 @@ input[type=range].styled-slider::-webkit-slider-thumb {
 }
 
 .date {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 400ms;
   min-height: 28px;
   font-size: 24px;
   margin-bottom: 20px;
@@ -332,6 +344,9 @@ input[type=range].styled-slider::-webkit-slider-thumb {
 }
 
 .greeting-container {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 400ms;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -375,6 +390,9 @@ input[type=range].styled-slider::-webkit-slider-thumb {
 }
 
 .quotes-container {
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 400ms;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -404,21 +422,23 @@ input[type=range].styled-slider::-webkit-slider-thumb {
   align-self: flex-end;
   cursor: pointer;
   opacity: 0.8;
+  flex-shrink: 0;
 }
 
 
 .dropdown-content {
   visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 400ms, opacity 400ms;
   position: absolute;
   min-width: 190px;
-  height: 200px;
   z-index: 1;
   background-color: rgba(0, 0, 0, 0.363);
   border-radius: 10px;
   padding: 10px;
   text-decoration: none;
   list-style-type: none;
-  transition: visibility 1 ease-in-out;
+  top: -90%;
 }
 
 .settings-item {
@@ -435,8 +455,12 @@ input[type=range].styled-slider::-webkit-slider-thumb {
   margin-left: 15px;
 }
 
-.show {display:block;
-visibility: visible};
+.show {
+  display:block;
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 0s linear 0s, opacity 400ms;
+};
 
 .quote {
   min-height: 32px;
@@ -450,7 +474,30 @@ visibility: visible};
   width: 5%;
 }
 
+.hide {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 400ms, opacity 400ms;
+}
+
+
 @media (max-width: 768px) {
+  body {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+  }
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  height: fit-content;
+}
+
+.player {
+  flex-shrink: 0;
+}
+
   .time {
     min-height: 80px;
     font-size: 72px;    
