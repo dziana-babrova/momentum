@@ -105,7 +105,6 @@ tagsInputField.addEventListener("change", changeBackground);
 let settingsObject = {
   language: "en",
   imagesource: "GitHub",
-  tags: `${getTimeOfDay()}, nature`,
   blocks: [
     { audio: true },
     { weather: true },
@@ -256,7 +255,11 @@ function setLocalStorage() {
   localStorage.setItem("name", userName.value);
   localStorage.setItem("city", city.value);
   localStorage.setItem("settings", JSON.stringify(settingsObject));
-  localStorage.setItem("tags", tagsInputField.value);
+  if (tagsInputField.value !== `${getTimeOfDay()}, nature`) {
+    localStorage.setItem("tags", tagsInputField.value);
+  } else {
+    localStorage.removeItem("tags");
+  }
   localStorage.setItem("todo", JSON.stringify(todoArray));
 }
 
@@ -267,7 +270,11 @@ function getLocalStorage() {
   }
   languageDropdown.value = settingsObject.language;
   imageSourceDropdown.value = settingsObject.imagesource;
-  tagsInputField.value = settingsObject.tags;
+  if (localStorage.getItem("tags")) {
+    tagsInputField.value = localStorage.getItem("tags");
+  } else {
+    tagsInputField.value = `${getTimeOfDay()}, nature`;
+  }
   changeBackground();
 
   playerCheckbox.checked = settingsObject.blocks[0].audio;
@@ -601,7 +608,6 @@ function changeBackground() {
     slidePrev.addEventListener("click", getSlidePrev);
   }
   settingsObject.imagesource = imageSourceDropdown.value;
-  settingsObject.tags = tagsInputField.value;
   console.log(settingsObject);
 }
 

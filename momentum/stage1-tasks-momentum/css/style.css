@@ -66,6 +66,7 @@ body {
   background-color: rgba(255, 255, 255, 0.486);
   border-radius: 3px;
   align-self: center;
+  cursor:col-resize;
 }
 
 .volume-range {
@@ -74,6 +75,7 @@ body {
   background-color: rgba(255, 255, 255, 0.486);
   border-radius: 3px;
   align-self: center;
+  cursor:col-resize;
 }
 
 .progress, .volume-level {
@@ -175,6 +177,10 @@ body {
 
 .play-item:hover, .settings:hover, .rs img:hover, .github img:hover {
   opacity: 1;
+}
+
+.rs img:active, .github img:active, .settings:active {
+  transform: scale(110%);
 }
 
 .item-active {
@@ -296,8 +302,17 @@ input[type="checkbox"].items {
   outline: none;
 }
 
-.todo-text:hover {
+.todolabels:hover {
+  transform: scale(105%);
+}
+
+.todo-text:hover, .todo-add:hover {
   opacity: 1;
+}
+
+.todo-add:active {
+    transform: scale(110%);
+
 }
 
 .todo-add {
@@ -309,7 +324,10 @@ input[type="checkbox"].items {
   background: linear-gradient(21deg, #fa026e, #f9a894);
   color: white;
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.308);
+  opacity: 0.8;
 }
+
+
 
 .todo-items {
   list-style-type: none;
@@ -720,7 +738,22 @@ option:focus {
   transform: translatex(20px);
 }
 
+@media (max-width: 950px) {
+      .weather {
+    margin-left: 0px;
+  }
 
+  .header {
+  display: flex;
+  flex-wrap: wrap;
+  height: fit-content;
+  row-gap: 10px;
+}
+
+  .time-block {
+    margin-top: 20px;
+  }
+}
 
 @media (max-width: 768px) {
   body {
@@ -733,7 +766,27 @@ option:focus {
   display: flex;
   flex-wrap: wrap;
   height: fit-content;
+  row-gap: 10px;
 }
+
+.links-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.year {
+  width: 60px;
+}
+
+.dropdown-container {
+  top: -115%;
+}
+/* .footer {
+    display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+} */
 
 .player {
   flex-shrink: 0;
@@ -756,5 +809,13 @@ option:focus {
   .name {
     font-size: 32px;
     padding: 5px;
+  }
+
+  .weather {
+    margin-left: 0px;
+  }
+
+  .name::placeholder {
+    font-size: 23px;
   }
 }
