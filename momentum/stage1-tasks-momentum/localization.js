@@ -62,7 +62,15 @@ const localization = {
     addbutton: {
         en: "Add",
         ru: "Добавить",
-    }
+  }, 
+  todoPlaceholder: {
+    en: "To Do",
+    ru: "Список дел",
+  },
+  tooltip: {
+    en: "Right click to mark important",
+    ru: "Клик правой кнопкой мыши, чтобы пометить как важное"
+  }
 };
 
 export default localization;

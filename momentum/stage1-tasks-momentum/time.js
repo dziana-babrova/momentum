@@ -153,6 +153,8 @@ function setSettingsLabels() {
   settingsItems[0].textContent = localization.langDropdown[languageDropdown.value];
   settingsItems[1].textContent = localization.imageSource[languageDropdown.value];
   settingsItems[2].textContent = localization.imageTags[languageDropdown.value];
+  todoButton.textContent = localization.addbutton[languageDropdown.value];
+  todoInput.placeholder = localization.todoPlaceholder[languageDropdown.value];
 
   settingsItems[0].append(languageDropdown);
   settingsItems[1].append(imageSourceDropdown);
@@ -319,6 +321,13 @@ userName.addEventListener("input", changeInputSize);
 
 /* Create todo list */
 todoButton.addEventListener("click", createArrayOfTodo);
+todoInput.addEventListener("keypress", function (event) {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    createArrayOfTodo();
+  }
+})
+
 
 let todoArray = [];
 function createArrayOfTodo() {
@@ -327,7 +336,6 @@ function createArrayOfTodo() {
     todo: todoInput.value,
     checked: false,
     important: false,
-    deleted: false,
   };
 
   todoArray.push(newTodo);
@@ -335,40 +343,60 @@ function createArrayOfTodo() {
   todoInput.value = "";
 }
 
+let todoelements;
+let closeButtons;
+
 function displayTodo() {
   let displayTodo = "";
   todoArray.forEach((item, i) => {
-    displayTodo += `<li>
-    <input type="checkbox" id="item_${i}" ${item.checked ? "checked" : ""}>
-    <label class="${item.important ? "important" : ""}" for="item_${i}">${item.todo}</label>
-
+    displayTodo += `<li class="todo-element ${item.important ? "important" : ""}" title="${!item.important ? localization.tooltip[languageDropdown.value] : ""}">
+    <input class="items" type="checkbox" id="item_${i}" ${item.checked ? "checked" : ""}>
+    <label class="todolabels" for="item_${i}">${item.todo}</label>
+    <span class="close">+</span>
     </li>`;
     todoList.innerHTML = displayTodo;
   });
-  console.log(todoArray);
-}
 
-todoList.addEventListener("change", function (event) {
-  let valueLabel = todoList.querySelector("[for=" + event.target.getAttribute("id") + "]").innerHTML;
+  todoelements = document.querySelectorAll(".todo-element");
+  closeButtons = document.querySelectorAll(".close");
 
-  todoArray.forEach((element) => {
-    if (element.todo === valueLabel) {
-      element.checked = !element.checked;
-    }
-    console.log(element.todo, valueLabel, element.checked);
-    console.log(todoArray);
-  });
-});
+  closeButtons.forEach((el, index) => {
+    el.addEventListener(("click"), function () {
+      todoArray.splice(index, 1);
+      todoelements[index].style.display = "none";
+    })
+  }
+  );
 
-todoList.addEventListener("contextmenu", function (event) {
-  event.preventDefault();
-  todoArray.forEach((element) => {
-    if (element.todo === event.target.innerHTML) {
-      element.important = !element.important;
-      event.target.classList.toggle("important");
-    }
-  });
-});
+  todoelements.forEach((el, index) =>
+    el.addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+      todoArray[index].important = !todoArray[index].important;
+      el.classList.toggle("important");
+    })
+  );
+
+    todoelements.forEach((el, index) =>
+      el.addEventListener("change", function (event) {
+        todoArray[index].checked = !todoArray[index].checked;
+              if (todoArray[index].checked) {
+                el.classList.add("done");
+              } else {
+                el.classList.remove("done");
+              }
+
+      })
+  );
+
+    todoelements.forEach((el, index) => {
+      if (todoArray[index].checked) {
+        el.classList.add("done");
+      } else {
+        el.classList.remove("done");
+      }
+    });
+
+  }
 
 /* Get time of the day*/
 function getTimeOfDay() {
@@ -591,6 +619,7 @@ languageDropdown.addEventListener("change", function showOption() {
   getWeather();
   getQuotes();
   showTime();
+  displayTodo();
 });
 
 /* Audio Player */
