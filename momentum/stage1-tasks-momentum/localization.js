@@ -56,37 +56,13 @@ const localization = {
     ru: "Тэги",
   },
   toggles: {
-    en: ["Player", "Weather", "Time", "Date", "Greeting", "Quotes", "To Do"],
+    en: ["Player", "Weather", "Time", "Date", "Greeting", "Quotes", "ToDo"],
     ru: ["Плеер", "Погода", "Время", "Дата", "Приветствие", "Цитаты", "Список дел"],
   },
-  player: {
-    en: "Player",
-    ru: "Плеер",
-  },
-  weather: {
-    en: "Weather",
-    ru: "Погода",
-  },
-  time: {
-    en: "Time",
-    ru: "Время",
-  },
-  date: {
-    en: "Date",
-    ru: "Дата",
-  },
-  greeting: {
-    en: "Greeting",
-    ru: "Приветствие",
-  },
-  quotes: {
-    en: "Quotes",
-    ru: "Цитаты",
-    },
-    todo: {
-        en: "To Do",
-        ru: "Список дел",
-  }
+    addbutton: {
+        en: "Add",
+        ru: "Добавить",
+    }
 };
 
 export default localization;

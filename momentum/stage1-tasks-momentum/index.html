@@ -9,6 +9,7 @@
   <title>momentum</title>
 </head>
 <body>
+  <div class="opacity"></div>
   <header class="header">
     <div class="player">
       <div class="player-controls">
@@ -16,16 +17,23 @@
         <button class="play player-icon"></button>
         <button class="play-next player-icon"></button>
         <button class=" play mute"></button>
-        <input type="range" class="volume-slider" value="50" max="">
+        <div class="volume-range"><div class="volume-level"></div></div>
       </div>
             <div class="current-track-container">
         <div class="current-track"></div>
       </div>
       <div class="range-and-mute" >
-      <input type="range" id="seek" value="0" max=""/>
+        <div class="range"><div class="progress"></div></div>
               <div class="time-block"><div class="current-position">00:00/</div><div class="current-track-time">00:00</div></div>
       </div>
       <ul class="play-list"></ul>
+    </div>
+    <div class="todo-container">
+  <div class="todo-input">
+    <input class="todo-text" type="text">
+    <button class="todo-add">add</button>
+  </div>
+  <ul class="todo-items"></ul>
     </div>
     <div class="weather">
       <input type="text" class="city"/>
@@ -54,18 +62,14 @@
   <footer class="footer">
     <div class="settings-container">
     <button class="settings"></button>
+    <div class="dropdown-container">
       <ul class="dropdown-content">
   <li class="settings-item"></li>
   <li class="settings-item"></li>
   <li class="settings-item"></li>
-  <li class="settings-item"></li>
-  <li class="settings-item"></li>
-  <li class="settings-item"></li>
-  <li class="settings-item"></li>
-  <li class="settings-item"></li>
-  <li class="settings-item"></li>
-  <li class="settings-item"></li>
     </ul>
+    <ul class="dropdown-content-2"></ul>
+    </div>
     </div>
     <div class="quotes-container">
     <button class="change-quote"></button>
@@ -74,7 +78,11 @@
       <div class="author"></div>
     </div>
     </div>
-    <div class="links-container"></div>
+    <div class="links-container">
+      <a class="rs" href="https://rs.school/js/" target="_blank"><img src="assets/svg/rs.svg"></a>
+      <a class="github" href="https://github.com/dziana-babrova" target="_blank"><img src="assets/svg/github.svg"></a>
+      <div class="year">2022</div>
+    </div>
   </footer>
   <script type="module" src="time.js"></script>
 </body>

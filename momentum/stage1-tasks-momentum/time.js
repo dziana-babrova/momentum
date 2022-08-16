@@ -21,19 +21,28 @@ const play = document.querySelector(".play");
 const playPrevTrack = document.querySelector(".play-prev");
 const playNextTrack = document.querySelector(".play-next");
 const playListContainer = document.querySelector(".play-list");
-const progressBar = document.querySelector("#seek");
 const currentTrack = document.querySelector(".current-track");
 const TrackDuration = document.querySelector(".current-track-time");
 const currentPosition = document.querySelector(".current-position");
 const mute = document.querySelector(".mute");
 const volume = document.querySelector(".volume-slider");
 const settings = document.querySelector(".settings");
-const dropdown = document.querySelector(".dropdown-content");
+const dropdown = document.querySelector(".dropdown-container");
 const settingsItems = document.querySelectorAll(".settings-item");
 const player = document.querySelector(".player");
 const weather = document.querySelector(".weather");
 const greetingContainer = document.querySelector(".greeting-container");
 const quotesContainer = document.querySelector(".quotes-container");
+const todoButton = document.querySelector(".todo-add");
+const todoInput = document.querySelector(".todo-text");
+const todoList = document.querySelector(".todo-items");
+const progressBarv2 = document.querySelector(".progress");
+const trackwidth = document.querySelector(".range");
+const volumeBar = document.querySelector(".volume-range");
+const volumeLevel = document.querySelector(".volume-level");
+const todoContainer = document.querySelector(".todo-container");
+const checkboxesList = document.querySelector(".dropdown-content-2");
+const opacity = document.querySelector(".opacity");
 
 /** Create playlist */
 playList.forEach((el) => {
@@ -51,6 +60,7 @@ playList.forEach((el) => {
 
 const playedItem = document.querySelectorAll(".play-item");
 const playedIcons = document.querySelectorAll(".individual-play");
+const trackTexts = document.querySelectorAll(".individual-text");
 
 /** Create settings items */
 const languageDropdown = document.createElement("select");
@@ -86,77 +96,139 @@ tagsInput.classList.add("tags-input");
 const tagsInputField = document.createElement("input");
 tagsInputField.classList.add("tags-input-field");
 tagsInputField.type = "text";
+const span = document.createElement("span");
+span.classList.add("focus-bg");
+
 
 tagsInputField.addEventListener("change", changeBackground);
 
-const playerCheckbox = document.createElement("input");
-playerCheckbox.classList.add("checkbox");
-playerCheckbox.type = "checkbox";
-const weatherCheckbox = document.createElement("input");
-weatherCheckbox.classList.add("checkbox");
-weatherCheckbox.type = "checkbox";
-const timeCheckbox = document.createElement("input");
-timeCheckbox.classList.add("checkbox");
-timeCheckbox.type = "checkbox";
-const DateCheckbox = document.createElement("input");
-DateCheckbox.classList.add("checkbox");
-DateCheckbox.type = "checkbox";
-const greetingCheckbox = document.createElement("input");
-greetingCheckbox.classList.add("checkbox");
-greetingCheckbox.type = "checkbox";
-const quotesCheckbox = document.createElement("input");
-quotesCheckbox.classList.add("checkbox");
-quotesCheckbox.type = "checkbox";
-const todoCheckbox = document.createElement("input");
-todoCheckbox.classList.add("checkbox");
-todoCheckbox.type = "checkbox";
+let settingsObject = {
+  language: "en",
+  imagesource: "GitHub",
+  tags: `${getTimeOfDay()}, nature`,
+  blocks: [
+    { audio: true },
+    { weather: true },
+    { time: true },
+    { date: true },
+    { greeting: true },
+    { quote: true },
+    { todolist: true },
+  ],
+};
 
+  localization.toggles[languageDropdown.value].forEach((element, index) => {
+    const checkboxListItem = document.createElement("li");
+    checkboxListItem.classList.add("settings-item")
+    checkboxesList.append(checkboxListItem);
+    const checkbox = document.createElement("input");
+    checkbox.classList.add("toggle");
+    checkbox.type = "checkbox";
+    checkbox.checked = true;
+    checkbox.id = element;
+    checkboxListItem.append(checkbox);
+    const label = document.createElement("label");
+    label.classList.add("checkbox-label");
+    label.htmlFor = element;
+    checkboxListItem.prepend(label);
+    label.textContent = element;
+  });
 
-function createSettingsElements() {
+const checkboxLables = document.querySelectorAll(".checkbox-label");
+
+function translateToggles() {
+  checkboxLables.forEach((el, index) => { el.textContent = localization.toggles[languageDropdown.value][index]})
+}
+
+const playerCheckbox = document.querySelector("#Player");
+const weatherCheckbox = document.querySelector("#Weather");
+const timeCheckbox = document.querySelector("#Time");
+const DateCheckbox = document.querySelector("#Date");
+const greetingCheckbox = document.querySelector("#Greeting");
+const quotesCheckbox = document.querySelector("#Quotes");
+const todoCheckbox = document.querySelector("#ToDo");
+
+/* Set settings elements*/
+function setSettingsLabels() {
+  settingsItems[0].textContent = localization.langDropdown[languageDropdown.value];
+  settingsItems[1].textContent = localization.imageSource[languageDropdown.value];
+  settingsItems[2].textContent = localization.imageTags[languageDropdown.value];
+
   settingsItems[0].append(languageDropdown);
   settingsItems[1].append(imageSourceDropdown);
   settingsItems[2].append(tagsInput);
   settingsItems[2].appendChild(tagsInputField);
-  settingsItems[3].append(playerCheckbox);
-  settingsItems[4].append(weatherCheckbox);
-  settingsItems[5].append(timeCheckbox);
-  settingsItems[6].append(DateCheckbox);
-  settingsItems[7].append(greetingCheckbox);
-  settingsItems[8].append(quotesCheckbox);
-  settingsItems[9].append(todoCheckbox);
 }
-
-createSettingsElements();
 
 /* Hide/display elements */
 function hidePlayer() {
-  if (playerCheckbox.checked === false) player.classList.add("hide");
-  else player.classList.remove("hide");
+  if (playerCheckbox.checked === false) {
+    player.classList.add("hide");
+    settingsObject.blocks[0].audio = false;
+  } else {
+    player.classList.remove("hide");
+    settingsObject.blocks[0].audio = true;
+  }
 }
 
 function hideWeather() {
-  if (weatherCheckbox.checked === false) weather.classList.add("hide");
-  else weather.classList.remove("hide");
+    if (weatherCheckbox.checked === false) {
+      weather.classList.add("hide");
+      settingsObject.blocks[1].weather = false;
+    } else {
+      weather.classList.remove("hide");
+      settingsObject.blocks[1].weather = true;
+    }
 }
 
 function hideTime() {
-    if (timeCheckbox.checked === false) time.classList.add("hide");
-    else time.classList.remove("hide");
+      if (timeCheckbox.checked === false) {
+        time.classList.add("hide");
+        settingsObject.blocks[2].time = false;
+      } else {
+        time.classList.remove("hide");
+        settingsObject.blocks[2].time = true;
+      }
 }
 
 function hideDate() {
-    if (DateCheckbox.checked === false) dateElement.classList.add("hide");
-    else dateElement.classList.remove("hide");
+        if (DateCheckbox.checked === false) {
+          dateElement.classList.add("hide");
+          settingsObject.blocks[3].date = false;
+        } else {
+          dateElement.classList.remove("hide");
+          settingsObject.blocks[3].date = true;
+        }
 }
 
 function hideGreeting() {
-    if (greetingCheckbox.checked === false) greetingContainer.classList.add("hide");
-    else greetingContainer.classList.remove("hide");
+          if (greetingCheckbox.checked === false) {
+            greetingContainer.classList.add("hide");
+            settingsObject.blocks[4].greeting = false;
+          } else {
+            greetingContainer.classList.remove("hide");
+            settingsObject.blocks[4].greeting = true;
+          }
 }
 
 function hideQuotes() {
-    if (quotesCheckbox.checked === false) quotesContainer.classList.add("hide");
-    else quotesContainer.classList.remove("hide");
+            if (quotesCheckbox.checked === false) {
+              quotesContainer.classList.add("hide");
+              settingsObject.blocks[5].quote = false;
+            } else {
+              quotesContainer.classList.remove("hide");
+              settingsObject.blocks[5].quote = true;
+            }
+}
+
+function hideTodoList() {
+  if (todoCheckbox.checked === false) {
+    todoContainer.classList.add("hide");
+    settingsObject.blocks[6].todolist = false;
+  } else {
+    todoContainer.classList.remove("hide");
+    settingsObject.blocks[6].todolist = true;
+  }
 }
 
 function hideAllElements() {
@@ -166,6 +238,7 @@ function hideAllElements() {
   hideDate();
   hideGreeting();
   hideQuotes();
+  hideTodoList();
 }
 
 playerCheckbox.addEventListener("change", hidePlayer);
@@ -174,69 +247,36 @@ timeCheckbox.addEventListener("change", hideTime);
 DateCheckbox.addEventListener("change", hideDate);
 greetingCheckbox.addEventListener("change", hideGreeting);
 quotesCheckbox.addEventListener("change", hideQuotes);
+todoCheckbox.addEventListener("change", hideTodoList);
 
 /* Set and get local storage */
 function setLocalStorage() {
   localStorage.setItem("name", userName.value);
   localStorage.setItem("city", city.value);
-  localStorage.setItem("language", languageDropdown.value);
-  localStorage.setItem("Image source", imageSourceDropdown.value);
+  localStorage.setItem("settings", JSON.stringify(settingsObject));
   localStorage.setItem("tags", tagsInputField.value);
-  if (!playerCheckbox.checked) {
-    localStorage.setItem("hide Player", playerCheckbox.checked);
-  } else {
-    localStorage.removeItem("hide Player");
-  }
-  if (!weatherCheckbox.checked) {
-    localStorage.setItem("hide Weather", weatherCheckbox.checked);
-  } else {
-    localStorage.removeItem("hide Weather");
-  }
-  if (!timeCheckbox.checked) {
-    localStorage.setItem("hide Time", timeCheckbox.checked);
-  } else {
-    localStorage.removeItem("hide Time");
-  }
-  if (!DateCheckbox.checked) {
-    localStorage.setItem("hide Date", DateCheckbox.checked);
-  } else {
-    localStorage.removeItem("hide Date");
-  }
-    if (!greetingCheckbox.checked) {
-      localStorage.setItem("hide Greeting", greetingCheckbox.checked);
-    } else {
-      localStorage.removeItem("hide Greeting");
-    }
-        if (!quotesCheckbox.checked) {
-          localStorage.setItem("hide Quotes", quotesCheckbox.checked);
-        } else {
-          localStorage.removeItem("hide Quotes");
-  }
-          if (!quotesCheckbox.checked) {
-            localStorage.setItem("hide Quotes", quotesCheckbox.checked);
-          } else {
-            localStorage.removeItem("hide Quotes");
-          }
-          if (!todoCheckbox.checked) {
-            localStorage.setItem("hide todo", todoCheckbox.checked);
-          } else {
-            localStorage.removeItem("hide todo");
-          }
+  localStorage.setItem("todo", JSON.stringify(todoArray));
 }
 
 function getLocalStorage() {
-  languageDropdown.value = localStorage.getItem("language") || langEn.value;
-
-   if (localStorage.getItem("tags")) {
-     tagsInputField.value = localStorage.getItem("tags");
-   } else {
-     tagsInputField.value = `${getTimeOfDay()}, nature`;
-   }
-
-  imageSourceDropdown.value = localStorage.getItem("Image source") || gitHubImages.value;
+  if (localStorage.getItem("settings")) {
+    settingsObject = JSON.parse(localStorage.getItem("settings"));
+    console.log(settingsObject);
+  }
+  languageDropdown.value = settingsObject.language;
+  imageSourceDropdown.value = settingsObject.imagesource;
+  tagsInputField.value = settingsObject.tags;
   changeBackground();
-    
-    if (localStorage.getItem("name")) {
+
+  playerCheckbox.checked = settingsObject.blocks[0].audio;
+  weatherCheckbox.checked = settingsObject.blocks[1].weather;
+  timeCheckbox.checked = settingsObject.blocks[2].time;
+  DateCheckbox.checked = settingsObject.blocks[3].date;
+  greetingCheckbox.checked = settingsObject.blocks[4].greeting;
+  quotesCheckbox.checked = settingsObject.blocks[5].quote;
+  todoCheckbox.checked = settingsObject.blocks[6].todolist;
+
+  if (localStorage.getItem("name")) {
     userName.value = localStorage.getItem("name");
   } else {
     userName.placeholder = localization.namePlaceholder[languageDropdown.value];
@@ -245,53 +285,15 @@ function getLocalStorage() {
 
   city.value = localStorage.getItem("city") || localization.cityPlaceholder[languageDropdown.value];
   getWeather();
+  translateToggles();
   setSettingsLabels();
   showTime();
   getQuotes();
-
-  if (localStorage.getItem("hide Player")) {
-    playerCheckbox.checked = false;
-  } else {
-    playerCheckbox.checked = true;
-    console.log(playerCheckbox.checked);
+  hideAllElements();
+  if (localStorage.getItem("todo")) {
+    todoArray = JSON.parse(localStorage.getItem("todo"));
   }
-
-  if (localStorage.getItem("hide Weather")) {
-    weatherCheckbox.checked = false;
-  } else {
-    weatherCheckbox.checked = true;
-  }
-
-    if (localStorage.getItem("hide Time")) {
-      timeCheckbox.checked = false;
-    } else {
-      timeCheckbox.checked = true;
-    }
-
-      if (localStorage.getItem("hide Date")) {
-        DateCheckbox.checked = false;
-      } else {
-        DateCheckbox.checked = true;
-      }
-
-        if (localStorage.getItem("hide Greeting")) {
-          greetingCheckbox.checked = false;
-        } else {
-          greetingCheckbox.checked = true;
-        }
-
-                if (localStorage.getItem("hide Quotes")) {
-                  quotesCheckbox.checked = false;
-                } else {
-                  quotesCheckbox.checked = true;
-                }
-
-          if (localStorage.getItem("hide todo")) {
-            todoCheckbox.checked = false;
-          } else {
-            todoCheckbox.checked = true;
-          }
-hideAllElements();
+  displayTodo();
 }
 
 window.addEventListener("beforeunload", setLocalStorage);
@@ -313,7 +315,60 @@ function changeInputSize() {
   }
 }
 
-  userName.addEventListener("input", changeInputSize)
+userName.addEventListener("input", changeInputSize);
+
+/* Create todo list */
+todoButton.addEventListener("click", createArrayOfTodo);
+
+let todoArray = [];
+function createArrayOfTodo() {
+  if (!todoInput.value) return;
+  let newTodo = {
+    todo: todoInput.value,
+    checked: false,
+    important: false,
+    deleted: false,
+  };
+
+  todoArray.push(newTodo);
+  displayTodo();
+  todoInput.value = "";
+}
+
+function displayTodo() {
+  let displayTodo = "";
+  todoArray.forEach((item, i) => {
+    displayTodo += `<li>
+    <input type="checkbox" id="item_${i}" ${item.checked ? "checked" : ""}>
+    <label class="${item.important ? "important" : ""}" for="item_${i}">${item.todo}</label>
+
+    </li>`;
+    todoList.innerHTML = displayTodo;
+  });
+  console.log(todoArray);
+}
+
+todoList.addEventListener("change", function (event) {
+  let valueLabel = todoList.querySelector("[for=" + event.target.getAttribute("id") + "]").innerHTML;
+
+  todoArray.forEach((element) => {
+    if (element.todo === valueLabel) {
+      element.checked = !element.checked;
+    }
+    console.log(element.todo, valueLabel, element.checked);
+    console.log(todoArray);
+  });
+});
+
+todoList.addEventListener("contextmenu", function (event) {
+  event.preventDefault();
+  todoArray.forEach((element) => {
+    if (element.todo === event.target.innerHTML) {
+      element.important = !element.important;
+      event.target.classList.toggle("important");
+    }
+  });
+});
 
 /* Get time of the day*/
 function getTimeOfDay() {
@@ -365,6 +420,9 @@ async function showTime() {
 }
 
 showTime();
+greeting.addEventListener("DOMAttributeNameChanged", changeBackground);
+greeting.addEventListener("DOMAttrModified", changeBackground);
+
 
 /* Show weather */
 async function getWeather() {
@@ -409,9 +467,11 @@ changeQuote.addEventListener("click", getQuotes);
 /* Show settings */
 function showDrop() {
   dropdown.classList.toggle("show");
+  opacity.classList.toggle("add");
 }
 
 settings.addEventListener("click", showDrop);
+opacity.addEventListener("click", showDrop);
 
 /* Set background image from GitHub*/
 let randomNum = Math.floor(Math.random() * (20 - 1 + 1)) + 1;
@@ -470,8 +530,10 @@ async function setImageFromFlickr() {
     console.log(url);
     const res = await fetch(url);
     const data = await res.json();
-    const photoArray = await data.photos.photo.filter((el) => el.url_l !== undefined).filter(el => el.width_l > el.height_l);
-    let random = Math.floor(Math.random() * (photoArray.length-1));
+    const photoArray = await data.photos.photo
+      .filter((el) => el.url_l !== undefined)
+      .filter((el) => el.width_l > el.height_l);
+    let random = Math.floor(Math.random() * (photoArray.length - 1));
     const img = new Image();
     img.src = photoArray[random].url_l;
     img.onload = () => {
@@ -483,7 +545,7 @@ async function setImageFromFlickr() {
   }
 }
 
-  /* Change Background */
+/* Change Background */
 function changeBackground() {
   if (imageSourceDropdown.value === unsplashImages.value) {
     setImageFromUnsplash();
@@ -510,191 +572,225 @@ function changeBackground() {
     slideNext.addEventListener("click", getSlideNext);
     slidePrev.addEventListener("click", getSlidePrev);
   }
+  settingsObject.imagesource = imageSourceDropdown.value;
+  settingsObject.tags = tagsInputField.value;
+  console.log(settingsObject);
 }
 
-  imageSourceDropdown.addEventListener("change", changeBackground);
+imageSourceDropdown.addEventListener("change", changeBackground);
+greeting.addEventListener("change", changeBackground);
 
-  /* Set settings elements*/
-  function setSettingsLabels() {
-    settingsItems[0].textContent = `${localization.langDropdown[languageDropdown.value]}`;
-    settingsItems[1].textContent = localization.imageSource[languageDropdown.value];
-    settingsItems[2].textContent = localization.imageTags[languageDropdown.value];
-    settingsItems[3].textContent = localization.player[languageDropdown.value];
-    settingsItems[4].textContent = localization.weather[languageDropdown.value];
-    settingsItems[5].textContent = localization.time[languageDropdown.value];
-    settingsItems[6].textContent = localization.date[languageDropdown.value];
-    settingsItems[7].textContent = localization.greeting[languageDropdown.value];
-    settingsItems[8].textContent = localization.quotes[languageDropdown.value];
-    settingsItems[9].textContent = localization.todo[languageDropdown.value];
+/* Change language */
+languageDropdown.addEventListener("change", function showOption() {
+  settingsObject.language = languageDropdown.value;
+  city.value = localization.cityPlaceholder[languageDropdown.value];
+  userName.placeholder = localization.namePlaceholder[languageDropdown.value];
+  changeInputSize();
+  translateToggles();
+  setSettingsLabels();
+  getWeather();
+  getQuotes();
+  showTime();
+});
 
-    
-    settingsItems[0].append(languageDropdown);
-    settingsItems[1].append(imageSourceDropdown);
-    settingsItems[2].append(tagsInput);
-    settingsItems[2].appendChild(tagsInputField);
-    settingsItems[3].append(playerCheckbox);
-      settingsItems[4].append(weatherCheckbox);
-      settingsItems[5].append(timeCheckbox);
-      settingsItems[6].append(DateCheckbox);
-      settingsItems[7].append(greetingCheckbox);
-      settingsItems[8].append(quotesCheckbox);
-      settingsItems[9].append(todoCheckbox);
+/* Audio Player */
+const audio = new Audio();
+audio.volume = 0.5;
+let isPlay = false;
+let playNum = 0;
+let curtime = 0;
+let currentTrackValue = 0;
+
+/* Change volume */
+let volumeMousedown = false; 
+
+volumeBar.addEventListener("mousedown", function (e) {
+  volumeMousedown = true;
+})
+
+volumeBar.addEventListener("mousemove", function (e) {
+  if (volumeMousedown) {
+    changeVolume(e);
   }
+})
 
-  /* Change language */
-  languageDropdown.addEventListener("change", function showOption() {
-    city.value = localization.cityPlaceholder[languageDropdown.value];
-    userName.placeholder = localization.namePlaceholder[languageDropdown.value];
-    changeInputSize();
-    setSettingsLabels();
-    getWeather();
-    getQuotes();
-    showTime();
-  });
-
-  /* Audio Player */
-  const audio = new Audio();
-  let isPlay = false;
-  let playNum = 0;
-  let curtime = 0;
-
-  function playAudio() {
-    if (!isPlay) {
-      audio.src = playList[playNum].src;
-      audio.currentTime = curtime;
-      audio.preload = "auto";
-      audio.volume = volume.value / 100;
-      audio.play();
-      isPlay = true;
-      play.classList.add("pause");
-      let audioDuration;
-      playedItem[playNum].classList.add("item-active");
-      playedIcons[playNum].classList.add("individual-play-active");
-      currentTrack.textContent = playList[playNum].title;
-
-      volume.addEventListener("input", function (e) {
-        audio.volume = e.currentTarget.value / 100;
-        if (audio.volume === 0) {
-          mute.classList.add("unmute");
-        } else {
-          mute.classList.remove("unmute");
-        }
-      });
-
-      audio.addEventListener("loadedmetadata", function () {
-        audioDuration = audio.duration;
-        TrackDuration.textContent = parseTime(audio.duration);
-        progressBar.max = audioDuration;
-
-        function parseTime(duration) {
-          let minutes, seconds;
-          minutes = Math.floor(duration / 60)
-            .toString()
-            .padStart(2, "0");
-          seconds = Math.floor(duration % 60)
-            .toString()
-            .padStart(2, "0");
-          return `${minutes}:${seconds}`;
-        }
-
-        audio.addEventListener("timeupdate", function () {
-          curtime = parseInt(audio.currentTime, 10);
-          progressBar.value = curtime;
-          currentPosition.textContent = `${parseTime(curtime)}/`;
-        });
-
-        function audioChangeTime(e) {
-          let currentPositionOnBar = e.clientX - progressBar.offsetLeft;
-          let currentPositionOnBarInPercent = (currentPositionOnBar * 100) / progressBar.offsetWidth;
-          audio.currentTime = (currentPositionOnBarInPercent * audio.duration) / 100;
-        }
-
-        progressBar.addEventListener("click", audioChangeTime);
-      });
-    } else {
-      audio.pause();
-      isPlay = false;
-      play.classList.remove("pause");
-      playedIcons[playNum].classList.remove("individual-play-active");
-    }
-    audio.addEventListener("ended", playNext);
+volumeBar.addEventListener("mouseup", function (e) {
+  if (volumeMousedown) {
+    changeVolume(e);
+    volumeMousedown = false;
   }
+})
 
+player.addEventListener("mouseup", function (e) {
+      volumeMousedown = false;
+})
 
-  function muteAudio() {
-    mute.classList.toggle("unmute");
-    if (audio.muted === false) {
-      audio.muted = true;
-    } else {
-      audio.muted = false;
-    }
+function changeVolume(e) {
+  let currentPositionOnBar = e.clientX - volumeBar.offsetLeft;
+  volumeLevel.style.width = `${currentPositionOnBar}px`;
+  let volumeInPercent = (currentPositionOnBar * 100) / volumeBar.offsetWidth;
+  audio.volume = volumeInPercent / 100;
+  if (audio.volume === 0) {
+    mute.classList.add("unmute");
+  } else {
+    audio.muted = false;
+    mute.classList.remove("unmute");
   }
+}
 
-  mute.addEventListener("click", muteAudio);
+volumeBar.addEventListener("click", changeVolume);
+ 
+let widthVolume;
+function muteAudio() {
+  mute.classList.toggle("unmute");
+  audio.muted = !audio.muted;
+  if (!audio.muted) {
+    volumeLevel.style.width = widthVolume;
+  } else {
+    widthVolume = volumeLevel.style.width;
+    volumeLevel.style.width = `${0}px`;
+  }
+  console.log(widthVolume);
+}
 
+mute.addEventListener("click", muteAudio);
 
-  function playNext() {
-    playNum++;
-    if (playNum > playList.length - 1) {
-      playNum = 0;
-    }
-    audio.src = playList[playNum].src;
-    audio.currentTime = 0;
-    audio.play();
-    playedItem.forEach((item) => item.classList.remove("item-active"));
-    playedItem[playNum].classList.add("item-active");
+/* Change active elements*/
+function changeActiveElements() {
+    trackTexts.forEach((item) => item.classList.remove("item-active"));
+    trackTexts[playNum].classList.add("item-active");
     playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
     playedIcons[playNum].classList.add("individual-play-active");
-    isPlay = true;
-    play.classList.add("pause");
     currentTrack.textContent = playList[playNum].title;
-  }
+}
 
-  function playPrev() {
-    playNum--;
-    if (playNum < 0) {
-      playNum = playList.length - 1;
-    }
-    audio.src = playList[playNum].src;
-    audio.currentTime = 0;
+/* Set attributes for played track and play it*/
+function playTrack() {
     audio.play();
-    playedItem.forEach((item) => item.classList.remove("item-active"));
-    playedItem[playNum].classList.add("item-active");
-    playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
-    playedIcons[playNum].classList.add("individual-play-active");
     isPlay = true;
     play.classList.add("pause");
-    currentTrack.textContent = playList[playNum].title;
-  }
+}
 
-  play.addEventListener("click", playAudio);
-  playNextTrack.addEventListener("click", playNext);
-  playPrevTrack.addEventListener("click", playPrev);
+function playAudio() {
+  if (!isPlay) {
+    audio.src = playList[playNum].src;
+    audio.currentTime = curtime;
+    audio.preload = "auto";
+    let audioDuration;
+    playTrack();
+    changeActiveElements()
 
-  let currentTrackValue = 5;
+    audio.addEventListener("loadedmetadata", function () {
+      audioDuration = audio.duration;
+      TrackDuration.textContent = parseTime(audio.duration);
 
-  playedIcons.forEach((el, key) =>
-    el.addEventListener("click", function someFunction() {
-      if (currentTrackValue === key) {
-        playNum = key;
-        audio.source = playList[key].src;
-        playedItem.forEach((item) => item.classList.remove("item-active"));
-        playedItem[playNum].classList.add("item-active");
-        playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
-        playedIcons[playNum].classList.add("individual-play-active");
-        playAudio();
-        currentTrackValue = key;
-      } else {
-        isPlay = false;
-        curtime = 0;
-        playNum = key;
-        audio.source = playList[key].src;
-        playedItem.forEach((item) => item.classList.remove("item-active"));
-        playedItem[playNum].classList.add("item-active");
-        playedIcons.forEach((item) => item.classList.remove("individual-play-active"));
-        playedIcons[playNum].classList.add("individual-play-active");
-        playAudio();
-        currentTrackValue = key;
+      function parseTime(duration) {
+        let minutes, seconds;
+        minutes = Math.floor(duration / 60)
+          .toString()
+          .padStart(2, "0");
+        seconds = Math.floor(duration % 60)
+          .toString()
+          .padStart(2, "0");
+        return `${minutes}:${seconds}`;
       }
-    })
-  )
+
+      audio.addEventListener("timeupdate", function () {
+        curtime = parseInt(audio.currentTime, 10);
+        progressBarv2.style.width = `${(180 * curtime) / audio.duration}px`;
+        currentPosition.textContent = `${parseTime(curtime)}/`;
+      });
+      let mouseDown = false;
+
+      trackwidth.addEventListener("mousedown", (e) => {
+        mouseDown = true;
+      });
+
+      trackwidth.addEventListener("mousemove", (e) => {
+        if (mouseDown) {
+          audioChangeTime(e);
+        }
+      });
+
+      trackwidth.addEventListener("mouseup", (e) => {
+        if (mouseDown) {
+          audioChangeTime(e);
+          mouseDown = false;
+        }
+      });
+
+      player.addEventListener("mouseup", (e) => {
+        mouseDown = false;
+      });
+
+      function audioChangeTime(e) {
+        let currentPositionOnBar = e.clientX - progressBarv2.offsetLeft;
+        let currentPositionOnBarInPercent = (currentPositionOnBar * 100) / trackwidth.offsetWidth;
+        audio.currentTime = (currentPositionOnBarInPercent * audio.duration) / 100;
+      }
+
+      trackwidth.addEventListener("click", audioChangeTime);
+    });
+
+  } else {
+    audio.pause();
+    isPlay = false;
+    play.classList.remove("pause");
+    playedIcons[playNum].classList.remove("individual-play-active");
+  }
+  audio.addEventListener("ended", playNext);
+}
+
+function playNext() {
+  playNum++;
+  currentTrackValue++;
+  if (playNum > playList.length - 1) {
+    playNum = 0;
+  }
+  if (currentTrackValue > playList.length - 1) {
+    currentTrackValue = 0;
+  }
+  audio.src = playList[playNum].src;
+  audio.currentTime = 0;
+  playTrack();
+  changeActiveElements();
+}
+
+function playPrev() {
+  playNum--;
+  currentTrackValue--;
+  if (playNum < 0) {
+    playNum = playList.length - 1;
+  }
+    if (currentTrackValue < 0) {
+      currentTrackValue = playList.length - 1;
+    }
+  audio.src = playList[playNum].src;
+  audio.currentTime = 0;
+  playTrack();
+  changeActiveElements();
+}
+
+play.addEventListener("click", playAudio);
+playNextTrack.addEventListener("click", playNext);
+playPrevTrack.addEventListener("click", playPrev);
+
+
+playedIcons.forEach((el, key) =>
+  el.addEventListener("click", function someFunction() {
+    if (currentTrackValue === key) {
+      currentTrackValue = key;
+      playNum = key;
+      changeActiveElements();
+      playAudio();
+    } else {
+      currentTrackValue = key;
+      playNum = key;
+      isPlay = false;
+      curtime = 0;
+      changeActiveElements();
+      playAudio();
+    }
+  })
+);
+
