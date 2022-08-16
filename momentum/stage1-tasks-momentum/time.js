@@ -256,25 +256,25 @@ todoCheckbox.addEventListener("change", hideTodoList);
 
 /* Set and get local storage */
 function setLocalStorage() {
-  localStorage.setItem("name", userName.value);
-  localStorage.setItem("city", city.value);
-  localStorage.setItem("settings", JSON.stringify(settingsObject));
+  localStorage.setItem("nameItem", userName.value);
+  localStorage.setItem("cityItem", city.value);
+  localStorage.setItem("settingsItems", JSON.stringify(settingsObject));
   if (tagsInputField.value !== `${getTimeOfDay()}, nature`) {
-    localStorage.setItem("tags", tagsInputField.value);
+    localStorage.setItem("tagsItems", tagsInputField.value);
   } else {
-    localStorage.removeItem("tags");
+    localStorage.removeItem("tagsItems");
   }
-  localStorage.setItem("todo", JSON.stringify(todoArray));
+  localStorage.setItem("todoItems", JSON.stringify(todoArray));
 }
 
 function getLocalStorage() {
-  if (localStorage.getItem("settings")) {
-    settingsObject = JSON.parse(localStorage.getItem("settings"));
+  if (localStorage.getItem("settingsItems")) {
+    settingsObject = JSON.parse(localStorage.getItem("settingsItems"));
   }
   languageDropdown.value = settingsObject.language;
   imageSourceDropdown.value = settingsObject.imagesource;
-  if (localStorage.getItem("tags")) {
-    tagsInputField.value = localStorage.getItem("tags");
+  if (localStorage.getItem("tagsItems")) {
+    tagsInputField.value = localStorage.getItem("tagsItems");
   } else {
     tagsInputField.value = `${getTimeOfDay()}, nature`;
   }
@@ -288,22 +288,22 @@ function getLocalStorage() {
   quotesCheckbox.checked = settingsObject.blocks[5].quote;
   todoCheckbox.checked = settingsObject.blocks[6].todolist;
 
-  if (localStorage.getItem("name")) {
-    userName.value = localStorage.getItem("name");
+  if (localStorage.getItem("nameItem")) {
+    userName.value = localStorage.getItem("nameItem");
   } else {
     userName.placeholder = localization.namePlaceholder[languageDropdown.value];
   }
   changeInputSize();
 
-  city.value = localStorage.getItem("city") || localization.cityPlaceholder[languageDropdown.value];
+  city.value = localStorage.getItem("cityItem") || localization.cityPlaceholder[languageDropdown.value];
   getWeather();
   translateToggles();
   setSettingsLabels();
   showTime();
   getQuotes();
   hideAllElements();
-  if (localStorage.getItem("todo")) {
-    todoArray = JSON.parse(localStorage.getItem("todo"));
+  if (localStorage.getItem("todoItems")) {
+    todoArray = JSON.parse(localStorage.getItem("todoItems"));
   }
   displayTodo();
 }
