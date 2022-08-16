@@ -44,6 +44,10 @@ const todoContainer = document.querySelector(".todo-container");
 const checkboxesList = document.querySelector(".dropdown-content-2");
 const opacity = document.querySelector(".opacity");
 
+console.log(
+  "Часы и календарь +15\nПриветствие +10\nСмена фонового изображения +20\nВиджет погоды +15\nВиджет цитата дня +10\nАудиоплеер +15\nПродвинутый аудиоплеер +20\nПеревод приложения на два языка (en/ru или en/be) +15\nПолучение фонового изображения от API +10\nНастройки приложения +20\nToDo List - список дел +10"
+);
+
 /** Create playlist */
 playList.forEach((el) => {
   const li = document.createElement("li");
@@ -266,7 +270,6 @@ function setLocalStorage() {
 function getLocalStorage() {
   if (localStorage.getItem("settings")) {
     settingsObject = JSON.parse(localStorage.getItem("settings"));
-    console.log(settingsObject);
   }
   languageDropdown.value = settingsObject.language;
   imageSourceDropdown.value = settingsObject.imagesource;
@@ -320,7 +323,6 @@ function changeInputSize() {
   } else {
     let size = userName.placeholder;
     userName.size = size.length - 4;
-    console.log(userName.size);
   }
 }
 
@@ -542,7 +544,6 @@ function getSlidePrev() {
 async function setImageFromUnsplash() {
   try {
     const url = `https://api.unsplash.com/photos/random?query=${tagsInputField.value}&client_id=CVFE2yn8y8lan7oI9_yMsGO3e4IQzQR0cV28F68IJOc&orientation=landscape`;
-    console.log(url);
     const res = await fetch(url);
     const data = await res.json();
     const img = new Image();
@@ -562,7 +563,6 @@ async function setImageFromUnsplash() {
 async function setImageFromFlickr() {
   try {
     const url = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=f0b17f0e527c2406c514c98a4392b1f7&tags=${tagsInputField.value}&extras=url_l&format=json&nojsoncallback=1&safe_search=1&per_page=200`;
-    console.log(url);
     const res = await fetch(url);
     const data = await res.json();
     const photoArray = await data.photos.photo
@@ -608,7 +608,6 @@ function changeBackground() {
     slidePrev.addEventListener("click", getSlidePrev);
   }
   settingsObject.imagesource = imageSourceDropdown.value;
-  console.log(settingsObject);
 }
 
 imageSourceDropdown.addEventListener("change", changeBackground);
@@ -685,7 +684,6 @@ function muteAudio() {
     widthVolume = volumeLevel.style.width;
     volumeLevel.style.width = `${0}px`;
   }
-  console.log(widthVolume);
 }
 
 mute.addEventListener("click", muteAudio);
