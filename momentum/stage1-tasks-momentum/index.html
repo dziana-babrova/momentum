@@ -11,7 +11,7 @@
 <body>
   <div class="opacity"></div>
   <header class="header">
-    <div class="player">
+    <div class="player" id="player">
       <div class="player-controls">
         <button class="play-prev player-icon"></button>
         <button class="play player-icon"></button>
@@ -28,14 +28,14 @@
       </div>
       <ul class="play-list"></ul>
     </div>
-    <div class="todo-container">
+    <div class="todo-container" id="todo">
   <div class="todo-input">
     <input class="todo-text" type="text">
     <button class="todo-add">add</button>
   </div>
   <ul class="todo-items"></ul>
     </div>
-    <div class="weather">
+    <div class="weather" id="weather">
       <input type="text" class="city"/>
       <i class="weather-icon owf"></i>
       <div class="weather-error"></div>
@@ -52,9 +52,9 @@
       <button class="slide-prev slider-icon"></button>
       <button class="slide-next slider-icon"></button>
     </div>
-    <time class="time"></time>
-    <date class="date"></date>
-    <div class="greeting-container">
+    <time class="time" id="time"></time>
+    <date class="date" id="date"></date>
+    <div class="greeting-container" id="greeting">
       <span class="greeting"></span>
       <input type="text" class="name"/>
     </div>
@@ -71,7 +71,7 @@
     <ul class="dropdown-content-2"></ul>
     </div>
     </div>
-    <div class="quotes-container">
+    <div class="quotes-container" id="quotes">
     <button class="change-quote"></button>
     <div>
       <div class="quote"></div>
